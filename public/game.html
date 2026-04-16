@@ -19,6 +19,34 @@
 <!-- Toast container -->
 <div id="toast-container"></div>
 
+<!-- ══ Sprint banner — shown during an active sprint ══ -->
+<div id="sprint-banner" class="sprint-banner hidden">
+  <div class="sprint-banner-left">
+    <span class="sprint-flag">🏃</span>
+    <div>
+      <div class="sprint-label">SPRINT ACTIVE</div>
+      <div class="sprint-cname" id="sprint-challenge-name">—</div>
+    </div>
+  </div>
+  <div class="sprint-countdown" id="sprint-countdown">02:00</div>
+  <div class="sprint-finishers-row" id="sprint-finishers-row">
+    <!-- avatars + names appear here as students finish -->
+  </div>
+</div>
+
+<!-- ══ Sprint results modal ══ -->
+<div id="sprint-results-modal" class="sprint-modal hidden">
+  <div class="sprint-modal-card">
+    <div style="font-size:3rem;margin-bottom:8px">🏆</div>
+    <h2 style="margin-bottom:20px;font-size:1.5rem">Sprint Complete!</h2>
+    <div id="sprint-results-body" style="margin-bottom:24px"></div>
+    <button class="btn btn-primary btn-lg"
+      onclick="document.getElementById('sprint-results-modal').classList.add('hidden')">
+      Back to Lab
+    </button>
+  </div>
+</div>
+
 <!-- Main game layout -->
 <div class="game-page">
 
@@ -42,7 +70,12 @@
     </div>
 
     <div class="topbar-actions">
-      <a href="/leaderboard" class="btn btn-ghost btn-sm" target="_blank">🏆 Leaderboard</a>
+      <!-- online count -->
+      <span id="online-pill" class="online-pill">
+        <span class="live-dot" style="width:6px;height:6px"></span>
+        <span id="online-count">0</span> online
+      </span>
+      <a href="/leaderboard" class="btn btn-ghost btn-sm" target="_blank">🏆 Board</a>
       <button class="btn btn-ghost btn-sm" onclick="logout()">Sign out</button>
     </div>
   </header>
@@ -111,11 +144,20 @@
 
     </main><!-- /main-panel -->
 
-    <!-- Right: live leaderboard -->
+    <!-- Right: live leaderboard + presence -->
     <aside class="lb-sidebar">
-      <div class="lb-header">
-        <span>Leaderboard</span>
-        <div class="lb-live"><div class="live-dot"></div> Live</div>
+      <!-- Who's online -->
+      <div class="lb-online-section" id="lb-online-section">
+        <div class="lb-header">
+          <span>In the Lab</span>
+          <div class="lb-live"><div class="live-dot"></div> Live</div>
+        </div>
+        <div id="lb-presence-list" class="lb-presence-list"></div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="lb-header" style="border-top:1px solid var(--border)">
+        <span>Rankings</span>
       </div>
       <div class="lb-list" id="lb-list">
         <div style="padding:20px;text-align:center;color:var(--dim);font-size:0.82rem">
@@ -134,11 +176,7 @@
 <!-- Game controller -->
 <script src="/js/app.js"></script>
 <script>
-  // Boot: init editor after app.js sets up state
-  document.addEventListener('DOMContentLoaded', () => {
-    initEditor();
-  });
-
+  document.addEventListener('DOMContentLoaded', () => { initEditor(); });
   function logout() {
     localStorage.removeItem('pylab_player');
     window.location.href = '/';

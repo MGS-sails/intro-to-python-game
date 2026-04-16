@@ -986,4 +986,227 @@ for key, value in result.items():
       },
     ],
   },
+
+  // ═══════════════════════════════════════════════════
+  // BUG HUNT CHALLENGES — find and fix the bugs!
+  // ═══════════════════════════════════════════════════
+  {
+    id: 21,
+    title: 'Debug: Case Blindness',
+    tier: 'Bug Hunt',
+    tierLevel: 3,
+    type: 'bugHunt',
+    xp: 300,
+    icon: '🐛',
+    concepts: ['string methods', 'case sensitivity'],
+    description: `🐛 **This code has a bug — find it and fix it!**
+
+The function below should count G and C nucleotides in a DNA sequence, but it always returns \`0\`.
+
+Run the code to see the wrong output, then find and fix the bug. The correct answer for \`"GCTAGCTAGCTA"\` is \`6\`.
+
+> **Hint:** Python strings are case-sensitive. \`"g" != "G"\``,
+    starterCode: `sequence = "GCTAGCTAGCTA"
+
+# Count GC content — but something is wrong...
+g_count = sequence.count("g")
+c_count = sequence.count("c")
+gc_count = g_count + c_count
+
+print(gc_count)`,
+    hints: [
+      'Run the code. What does it print?',
+      'Python\'s .count() is case-sensitive. "GCTA".count("g") → 0',
+      'Fix: use uppercase "G" and "C"',
+    ],
+    tests: [
+      {
+        description: 'gc_count equals 6',
+        testCode: `assert _ns.get('gc_count') == 6, f"Expected 6, got {_ns.get('gc_count')} — check case sensitivity in .count()"`,
+      },
+      {
+        description: '6 is printed',
+        testCode: `assert "6" in _stdout, "Expected '6' in output"`,
+      },
+    ],
+  },
+
+  {
+    id: 22,
+    title: 'Debug: Missing Factor',
+    tier: 'Bug Hunt',
+    tierLevel: 3,
+    type: 'bugHunt',
+    xp: 300,
+    icon: '🐛',
+    concepts: ['arithmetic', 'percentages'],
+    description: `🐛 **This code has a bug — find it and fix it!**
+
+This script should calculate GC content as a **percentage** (0–100), but it outputs a decimal between 0 and 1 instead.
+
+For \`"ATCGCGATCG"\` the correct answer is \`60.0\`.
+
+> **Hint:** To convert a fraction to a percentage, multiply by 100.`,
+    starterCode: `sequence = "ATCGCGATCG"
+
+gc = sequence.count("G") + sequence.count("C")
+percentage = gc / len(sequence)   # something missing here...
+
+print(round(percentage, 1))`,
+    hints: [
+      'What does dividing give you? A number between 0 and 1.',
+      'To get a percentage, multiply by 100.',
+      'percentage = (gc / len(sequence)) * 100',
+    ],
+    tests: [
+      {
+        description: 'percentage equals 60.0',
+        testCode: `p = _ns.get('percentage'); assert p is not None and abs(p - 60.0) < 0.01, f"Expected 60.0, got {p}"`,
+      },
+      {
+        description: '"60.0" is printed',
+        testCode: `assert "60.0" in _stdout, f"Expected '60.0' in output, got: {_stdout.strip()}"`,
+      },
+    ],
+  },
+
+  {
+    id: 23,
+    title: 'Debug: Off-By-One Codon',
+    tier: 'Bug Hunt',
+    tierLevel: 3,
+    type: 'bugHunt',
+    xp: 400,
+    icon: '🐛',
+    concepts: ['range()', 'string slicing', 'off-by-one'],
+    description: `🐛 **This code has a bug — find it and fix it!**
+
+This script slices an RNA sequence into codons (3-letter groups: AUG, UUU, …). But the step size is wrong, so the codons overlap and the result is incorrect.
+
+For \`"AUGUUUCGUUGA"\` the correct codons are \`['AUG', 'UUU', 'CGU', 'UGA']\`.
+
+> **Hint:** Codons are exactly **3** bases long. What should the step be in \`range()\`?`,
+    starterCode: `rna = "AUGUUUCGUUGA"
+codons = []
+
+for i in range(0, len(rna), 4):   # bug is on this line
+    codons.append(rna[i:i+3])
+
+print(codons)`,
+    hints: [
+      'Run the code. How many codons does it produce?',
+      'Codons are 3 bases long, so you step by 3, not 4.',
+      'Change 4 → 3 in range()',
+    ],
+    tests: [
+      {
+        description: 'codons equals [\'AUG\', \'UUU\', \'CGU\', \'UGA\']',
+        testCode: `c = _ns.get('codons', []); assert c == ['AUG','UUU','CGU','UGA'], f"Expected ['AUG','UUU','CGU','UGA'], got {c}"`,
+      },
+      {
+        description: 'Codons are printed',
+        testCode: `assert "AUG" in _stdout and "CGU" in _stdout, "Print the codons list"`,
+      },
+    ],
+  },
+
+  {
+    id: 24,
+    title: 'Debug: Wrong Value Appended',
+    tier: 'Bug Hunt',
+    tierLevel: 4,
+    type: 'bugHunt',
+    xp: 400,
+    icon: '🐛',
+    concepts: ['dict.items()', 'list.append()', 'variables'],
+    description: `🐛 **This code has a bug — find it and fix it!**
+
+This script should collect the **names** of large proteins (molecular weight > 50,000 Da) but it's appending the wrong thing.
+
+For the given dict, the correct output is \`['Albumin', 'Hemoglobin']\`.
+
+> **Hint:** In a \`for name, weight in dict.items():\` loop — you have two variables. Are you appending the right one?`,
+    starterCode: `proteins = {
+    "Insulin": 5733, "Albumin": 69000,
+    "Hemoglobin": 64000, "Lysozyme": 14300
+}
+
+large = []
+for name, weight in proteins.items():
+    if weight > 50000:
+        large.append(weight)   # bug is on this line
+
+print(sorted(large))`,
+    hints: [
+      'Run it. What does it print? Numbers or names?',
+      'You want to collect protein names, not their weights.',
+      'Change large.append(weight) → large.append(name)',
+    ],
+    tests: [
+      {
+        description: 'large contains protein names (not numbers)',
+        testCode: `l = _ns.get('large', []); assert all(isinstance(x, str) for x in l), f"Expected strings (names), got: {l}"`,
+      },
+      {
+        description: 'large equals [\'Albumin\', \'Hemoglobin\'] (sorted)',
+        testCode: `l = sorted(_ns.get('large', [])); assert l == ['Albumin','Hemoglobin'], f"Expected ['Albumin','Hemoglobin'], got {l}"`,
+      },
+      {
+        description: 'Sorted names are printed',
+        testCode: `assert "Albumin" in _stdout and "Hemoglobin" in _stdout, "Print the sorted list of large protein names"`,
+      },
+    ],
+  },
+
+  {
+    id: 25,
+    title: 'Debug: Frozen Counter',
+    tier: 'Bug Hunt',
+    tierLevel: 4,
+    type: 'bugHunt',
+    xp: 500,
+    icon: '🐛',
+    concepts: ['dict counters', 'increment bug', 'functions'],
+    description: `🐛 **This code has a bug — find it and fix it!**
+
+This function counts how many times each amino acid appears in a protein sequence. But all counts come out as \`1\` — even for amino acids that appear multiple times.
+
+For \`"MFSYWMM"\`, the correct output is \`{'M': 3, 'F': 1, 'S': 1, 'Y': 1, 'W': 1}\`.
+
+> **Hint:** Look very carefully at the line inside the loop. Is it actually incrementing the count?`,
+    starterCode: `def count_aas(seq):
+    counts = {}
+    for aa in seq:
+        if aa not in counts:
+            counts[aa] = 1
+        counts[aa] = counts[aa] + 0   # bug is on this line
+
+    return counts
+
+result = count_aas("MFSYWMM")
+print(result)`,
+    hints: [
+      'Run it. What does it print for M? Should be 3.',
+      'The counter never increments — look at what you\'re adding.',
+      'Change + 0 → + 1',
+    ],
+    tests: [
+      {
+        description: 'count_aas is callable',
+        testCode: `assert callable(_ns.get('count_aas')), "Function 'count_aas' not found"`,
+      },
+      {
+        description: 'M is counted 3 times',
+        testCode: `f = _ns['count_aas']; r = f("MFSYWMM"); assert r.get('M') == 3, f"Expected M:3, got M:{r.get('M')}"`,
+      },
+      {
+        description: 'All amino acids counted correctly',
+        testCode: `f = _ns['count_aas']; r = f("MFSYWMM"); assert r == {'M':3,'F':1,'S':1,'Y':1,'W':1}, f"Expected correct counts, got {r}"`,
+      },
+      {
+        description: 'Result is printed',
+        testCode: `assert "M" in _stdout and "3" in _stdout, "Print the result dict"`,
+      },
+    ],
+  },
 ];

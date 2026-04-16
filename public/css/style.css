@@ -943,6 +943,204 @@ a:hover { text-decoration: underline; }
   border-radius: 3px;
 }
 
+/* ═══════════════════════════════════════════════════
+   SPRINT MODE
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Sprint banner (slides in from top) ───────── */
+.sprint-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #f8514912, #e3b34112);
+  border-bottom: 2px solid #f8514966;
+  position: relative;
+  z-index: 200;
+  flex-shrink: 0;
+  animation: bannerSlideIn 0.4s ease;
+}
+.sprint-banner.hidden { display: none !important; }
+
+@keyframes bannerSlideIn {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* Banner must be inserted into the game-body grid column, so we need
+   to wrap banner + game-body. In practice we insert banner before game-body
+   and it sits inside the game-page rows. */
+.game-page {
+  grid-template-rows: 54px auto 1fr;
+}
+
+.sprint-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sprint-flag { font-size: 1.4rem; }
+.sprint-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.sprint-cname {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sprint-countdown {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  min-width: 68px;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.sprint-finishers-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+.sprint-finisher-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 500;
+  animation: chipPop 0.3s ease;
+}
+@keyframes chipPop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.sprint-finisher-chip.rank-1 { border-color: #ffd70080; background: #ffd70015; }
+.sprint-finisher-chip.rank-2 { border-color: #c0c0c080; background: #c0c0c010; }
+.sprint-finisher-chip.rank-3 { border-color: #cd7f3280; background: #cd7f3210; }
+
+/* ─── Sprint results modal ──────────────────────── */
+.sprint-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10500;
+  backdrop-filter: blur(6px);
+}
+.sprint-modal.hidden { display: none; }
+.sprint-modal-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes modalPop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.sprint-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.sprint-result-row.rank-1 { border-color: #ffd70060; background: #ffd70010; }
+.sprint-result-row.rank-2 { border-color: #c0c0c060; background: #c0c0c010; }
+.sprint-result-row.rank-3 { border-color: #cd7f3260; background: #cd7f3210; }
+.sprint-result-medal  { font-size: 1.5rem; width: 36px; text-align: center; }
+.sprint-result-avatar { font-size: 1.2rem; }
+.sprint-result-name   { flex: 1; font-weight: 600; }
+.sprint-result-time   { color: var(--muted); font-family: monospace; font-size: 0.85rem; }
+.sprint-result-bonus  { color: var(--gold); font-weight: 700; font-size: 0.88rem; }
+
+/* ─── Bug Hunt tier tag ─────────────────────────── */
+.tag-bughunt {
+  background: #f8514920;
+  color: var(--red);
+  border: 1px solid #f8514950;
+}
+
+/* ═══════════════════════════════════════════════════
+   ONLINE PRESENCE
+   ═══════════════════════════════════════════════════ */
+
+/* Online count pill in topbar */
+.online-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: var(--green);
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: #3fb95015;
+  border: 1px solid #3fb95030;
+  white-space: nowrap;
+}
+
+/* Presence section in lb-sidebar */
+.lb-online-section {
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.lb-presence-list {
+  padding: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.presence-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+  transition: background 0.12s;
+}
+.presence-chip:hover { background: var(--bg3); }
+.presence-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+.presence-name { font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.presence-challenge { font-size: 0.7rem; color: var(--dim); }
+
 /* ─── Responsive ────────────────────────────────── */
 @media (max-width: 1100px) {
   .game-body { grid-template-columns: var(--sidebar-w) 1fr; }

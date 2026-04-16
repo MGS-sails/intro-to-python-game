@@ -104,4 +104,10 @@ module.exports = {
   getPlayerProgress(playerId) {
     return db.prepare('SELECT * FROM submissions WHERE player_id = ? ORDER BY submitted_at').all(playerId);
   },
+
+  awardBonusXP(playerId, amount) {
+    db.prepare('UPDATE players SET total_xp = total_xp + ? WHERE id = ?').run(amount, playerId);
+    const player = db.prepare('SELECT total_xp FROM players WHERE id = ?').get(playerId);
+    return { newXP: player.total_xp, levelInfo: levelInfo(player.total_xp) };
+  },
 };

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyLab — Instructor Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: var(--bg); }
+
+    .instructor-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inst-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 32px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+    }
+    .inst-nav h1 { font-size: 1.1rem; font-weight: 700; }
+    .inst-nav .badge {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #e3b34122;
+      color: var(--gold);
+      border: 1px solid #e3b34140;
+      font-weight: 600;
+    }
+
+    .inst-body {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 24px;
+      padding: 32px;
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .inst-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .inst-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .auth-section { margin-bottom: 20px; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--green);
+    }
+    .form-group select option { background: var(--bg2); }
+
+    /* Sprint active state */
+    .sprint-active-card {
+      background: #f8514915;
+      border-color: #f8514950;
+    }
+    .sprint-timer-big {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--red);
+      text-align: center;
+      padding: 12px 0;
+    }
+
+    /* Submissions live feed */
+    .submission-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .sub-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      font-size: 0.87rem;
+      animation: slideInLeft 0.3s ease;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-20px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+    .sub-rank { font-size: 1.2rem; width: 30px; text-align: center; }
+    .sub-name { font-weight: 600; flex: 1; }
+    .sub-time { color: var(--muted); font-family: monospace; }
+    .sub-xp   { color: var(--gold); font-weight: 700; }
+
+    /* Online players */
+    .online-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .online-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+    .online-chip .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .online-chip .challenge-tag {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* Auth lock */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .auth-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+    }
+    .auth-card h2 { margin-bottom: 20px; }
+    .auth-card .auth-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .auth-error { color: var(--red); font-size: 0.82rem; margin-top: 8px; display: none; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.87rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-val { font-weight: 700; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<!-- Auth overlay -->
+<div id="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-icon">🔑</div>
+    <h2>Instructor Panel</h2>
+    <div class="form-group" style="text-align:left">
+      <label>Instructor Key</label>
+      <input type="password" id="key-input" placeholder="Enter your instructor key" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="authenticate()">Unlock</button>
+    <div class="auth-error" id="auth-error">Incorrect key — check your INSTRUCTOR_KEY setting</div>
+  </div>
+</div>
+
+<div class="instructor-page">
+  <nav class="inst-nav">
+    <h1>🎓 Instructor Panel</h1>
+    <span class="badge">INSTRUCTOR</span>
+    <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+      <span id="online-badge" style="font-size:0.82rem;color:var(--green)">0 students online</span>
+      <a href="/game" class="btn btn-ghost btn-sm">← Game</a>
+      <a href="/leaderboard" class="btn btn-ghost btn-sm" target="_blank">🏆 Leaderboard</a>
+    </div>
+  </nav>
+
+  <div class="inst-body">
+
+    <!-- Left column: controls -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Sprint launcher -->
+      <div class="inst-card" id="sprint-card">
+        <h2>🏃 Launch Sprint Race</h2>
+
+        <div id="sprint-idle-ui">
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">
+            A Sprint pushes a timed challenge to all connected students simultaneously.
+            First 3 to solve it earn bonus XP (500 / 300 / 150).
+          </p>
+
+          <div class="form-group">
+            <label>Challenge</label>
+            <select id="sprint-challenge-sel"></select>
+          </div>
+
+          <div class="form-group">
+            <label>Time Limit</label>
+            <select id="sprint-duration-sel">
+              <option value="60">1 minute</option>
+              <option value="120" selected>2 minutes</option>
+              <option value="180">3 minutes</option>
+              <option value="300">5 minutes</option>
+              <option value="600">10 minutes</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%" onclick="launchSprint()">
+            🚀 Launch Sprint for All Students
+          </button>
+        </div>
+
+        <div id="sprint-active-ui" style="display:none">
+          <div style="text-align:center;margin-bottom:12px">
+            <div style="font-size:0.82rem;color:var(--muted);margin-bottom:4px">SPRINT ACTIVE</div>
+            <div style="font-weight:700;font-size:1.1rem" id="active-sprint-title">—</div>
+          </div>
+          <div class="sprint-timer-big" id="sprint-timer-big">02:00</div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-danger" style="flex:1" onclick="cancelSprint()">Cancel Sprint</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session stats -->
+      <div class="inst-card">
+        <h2>📊 Session Stats</h2>
+        <div id="session-stats">
+          <div class="stat-row"><span>Students online</span><span class="stat-val" id="stat-online">0</span></div>
+          <div class="stat-row"><span>Total submissions today</span><span class="stat-val" id="stat-submissions">—</span></div>
+          <div class="stat-row"><span>Most popular challenge</span><span class="stat-val" id="stat-popular">—</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column: live feeds -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Sprint submissions live feed -->
+      <div class="inst-card">
+        <h2>⚡ Sprint Finishers</h2>
+        <div class="submission-feed" id="submission-feed">
+          <div style="color:var(--dim);font-size:0.85rem;text-align:center;padding:20px">
+            Launch a sprint to see finishers here in real time
+          </div>
+        </div>
+      </div>
+
+      <!-- Who's online -->
+      <div class="inst-card">
+        <h2>🟢 Students Online</h2>
+        <div class="online-grid" id="online-grid">
+          <div style="color:var(--dim);font-size:0.85rem">Waiting for students to join…</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let socket = null;
+  let instructorKey = '';
+  let sprintTimer = null;
+  let challenges = [];
+
+  // ── Auth ────────────────────────────────────────────
+  document.getElementById('key-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') authenticate();
+  });
+
+  async function authenticate() {
+    const key = document.getElementById('key-input').value.trim();
+    if (!key) return;
+
+    // Test the key by trying to join instructor room via socket
+    instructorKey = key;
+    initSocket();
+
+    // Wait for confirmation or error
+    socket.once('sprint:error', (msg) => {
+      if (msg === 'Invalid instructor key') {
+        document.getElementById('auth-error').style.display = 'block';
+        document.getElementById('auth-error').textContent = 'Incorrect key';
+        instructorKey = '';
+        socket.disconnect();
+      }
+    });
+
+    // Show panel after brief delay (socket connect is async)
+    setTimeout(() => {
+      if (instructorKey) {
+        document.getElementById('auth-overlay').style.display = 'none';
+        loadChallenges();
+      }
+    }, 600);
+  }
+
+  // ── Socket ──────────────────────────────────────────
+  function initSocket() {
+    socket = io();
+
+    socket.on('connect', () => {
+      socket.emit('instructor:join', { key: instructorKey });
+    });
+
+    socket.on('presence:update', (players) => {
+      renderOnline(players);
+    });
+
+    socket.on('sprint:started', (data) => {
+      renderSprintActive(data);
+      clearFeed();
+    });
+
+    socket.on('sprint:player_finished', (data) => {
+      addToFeed(data);
+    });
+
+    socket.on('sprint:ended', ({ submissions }) => {
+      renderSprintIdle();
+      if (submissions.length === 0) {
+        showFeedMessage('Time\'s up — nobody finished!');
+      }
+    });
+
+    socket.on('sprint:cancelled', () => {
+      renderSprintIdle();
+      showFeedMessage('Sprint cancelled');
+    });
+
+    socket.on('sprint:state', (data) => {
+      renderSprintActive(data);
+      (data.submissions || []).forEach(s => addToFeed(s, false));
+    });
+
+    socket.on('leaderboard_update', (data) => {
+      document.getElementById('stat-submissions').textContent =
+        data.reduce((sum, p) => sum + (p.challenges_completed || 0), 0);
+    });
+  }
+
+  // ── Load challenges ─────────────────────────────────
+  async function loadChallenges() {
+    try {
+      challenges = await fetch('/api/challenges').then(r => r.json());
+      const sel = document.getElementById('sprint-challenge-sel');
+      challenges.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.icon} ${c.title} (${c.tier} · ${c.xp} XP)`;
+        sel.appendChild(opt);
+      });
+    } catch (e) { console.error(e); }
+  }
+
+  // ── Sprint controls ─────────────────────────────────
+  function launchSprint() {
+    const challengeId = Number(document.getElementById('sprint-challenge-sel').value);
+    const durationSecs = Number(document.getElementById('sprint-duration-sel').value);
+    socket.emit('sprint:launch', { challengeId, durationSecs, key: instructorKey });
+  }
+
+  function cancelSprint() {
+    socket.emit('sprint:cancel', { key: instructorKey });
+  }
+
+  function renderSprintActive({ challengeTitle, durationSecs, startedAt, submissions }) {
+    document.getElementById('sprint-idle-ui').style.display = 'none';
+    document.getElementById('sprint-active-ui').style.display = 'block';
+    document.getElementById('sprint-card').classList.add('sprint-active-card');
+    document.getElementById('active-sprint-title').textContent = challengeTitle;
+
+    const endTime = startedAt + durationSecs * 1000;
+    if (sprintTimer) clearInterval(sprintTimer);
+    sprintTimer = setInterval(() => {
+      const rem = Math.max(0, endTime - Date.now());
+      const m = Math.floor(rem / 60000);
+      const s = Math.floor((rem % 60000) / 1000);
+      const el = document.getElementById('sprint-timer-big');
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      el.style.color = rem < 30000 ? 'var(--red)' : rem < 60000 ? 'var(--gold)' : 'var(--text)';
+      if (rem === 0) { clearInterval(sprintTimer); renderSprintIdle(); }
+    }, 500);
+  }
+
+  function renderSprintIdle() {
+    if (sprintTimer) clearInterval(sprintTimer);
+    document.getElementById('sprint-idle-ui').style.display = 'block';
+    document.getElementById('sprint-active-ui').style.display = 'none';
+    document.getElementById('sprint-card').classList.remove('sprint-active-card');
+  }
+
+  // ── Live feed ───────────────────────────────────────
+  const MEDALS = ['🥇', '🥈', '🥉'];
+
+  function clearFeed() {
+    document.getElementById('submission-feed').innerHTML = '';
+  }
+
+  function showFeedMessage(msg) {
+    document.getElementById('submission-feed').innerHTML =
+      `<div style="color:var(--muted);font-size:0.85rem;text-align:center;padding:20px">${msg}</div>`;
+  }
+
+  function addToFeed({ playerName, avatar, rank, timeSeconds, bonusXP }, animate = true) {
+    const feed = document.getElementById('submission-feed');
+    // Remove placeholder
+    const placeholder = feed.querySelector('div[style]');
+    if (placeholder) placeholder.remove();
+
+    const div = document.createElement('div');
+    div.className = 'sub-item';
+    if (!animate) div.style.animation = 'none';
+    div.innerHTML = `
+      <span class="sub-rank">${MEDALS[rank-1] || rank}</span>
+      <span style="font-size:1.2rem">${avatar}</span>
+      <span class="sub-name">${escHtml(playerName)}</span>
+      <span class="sub-time">${timeSeconds.toFixed(1)}s</span>
+      <span class="sub-xp">+${bonusXP} XP</span>
+    `;
+    feed.prepend(div);
+  }
+
+  // ── Online presence ─────────────────────────────────
+  function renderOnline(players) {
+    const count = players.length;
+    document.getElementById('online-badge').textContent = `${count} student${count !== 1 ? 's' : ''} online`;
+    document.getElementById('stat-online').textContent = count;
+
+    const grid = document.getElementById('online-grid');
+    if (count === 0) {
+      grid.innerHTML = '<div style="color:var(--dim);font-size:0.85rem">Waiting for students to join…</div>';
+      return;
+    }
+
+    const challengeMap = {};
+    try {
+      const cached = window._challenges || [];
+      cached.forEach(c => { challengeMap[c.id] = c.title; });
+    } catch {}
+
+    grid.innerHTML = players.map(p => `
+      <div class="online-chip">
+        <div class="dot"></div>
+        <span>${p.avatar}</span>
+        <span>${escHtml(p.playerName)}</span>
+        ${p.challengeId ? `<span class="challenge-tag">· #${p.challengeId}</span>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
+</body>
+</html>

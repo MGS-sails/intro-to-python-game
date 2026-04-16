@@ -28,4 +28,13 @@ PyLab is a gamified Python coding game at /Users/mahfouz/Code/sandbox/intro-to-p
 
 **Test system:** Each challenge has `testCode` (Python strings), executed via `exec()` in Pyodide with `_ns` (student namespace dict) and `_stdout` available. AssertionError messages surface directly to students.
 
-**Start:** `npm start` → http://localhost:3000
+**Multi-player competitive features:**
+- Sprint Race Mode: instructor launches timed race via `/instructor`, all clients auto-navigate and race; 1st/2nd/3rd place get +500/300/150 bonus XP; results modal shown to all on end
+- Online Presence: Socket.io tracks connected players and current challenge; shown in lb-sidebar and topbar pill
+- Bug Hunt challenges (ids 21-25): intentionally buggy life-sciences code for students to debug and fix
+- Instructor panel at `/instructor` (key: INSTRUCTOR_KEY env var, default PYLAB2024)
+- Deployment: `railway.toml` included; NOT compatible with Netlify (needs persistent WebSocket + server)
+
+**Socket.io events:** `sprint:launch`, `sprint:started`, `sprint:state`, `sprint:submit`, `sprint:player_finished`, `sprint:ended`, `sprint:cancel`, `sprint:cancelled`, `presence:join`, `presence:challenge`, `presence:update`, `instructor:join`
+
+**Start:** `npm start` → http://localhost:3000 · Instructor → http://localhost:3000/instructor
