@@ -1,0 +1,16 @@
+{
+  "name": "intro-to-python-game",
+  "version": "1.0.0",
+  "description": "Python learning game for life sciences professionals",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4"
+  },
+  "private": true
+}

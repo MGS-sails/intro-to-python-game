@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyLab — Python for Life Scientists</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .error-msg {
+      color: var(--red);
+      font-size: 0.83rem;
+      margin-top: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="landing">
+  <section class="hero">
+    <div class="dna-bg">
+      <div class="dna-strand"></div>
+      <div class="dna-strand"></div>
+      <div class="dna-strand"></div>
+      <div class="dna-strand"></div>
+      <div class="dna-strand"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-logo">🧬</div>
+      <h1 class="hero-title">PyLab</h1>
+      <p class="hero-subtitle">
+        A coding game for life scientists. Master Python fundamentals through
+        DNA analysis, protein databases, and genomics challenges.
+        Compete with your colleagues on the live leaderboard.
+      </p>
+
+      <div class="register-card">
+        <h2>Enter the Lab</h2>
+
+        <div class="form-group">
+          <label for="player-name">Your Name</label>
+          <input
+            type="text"
+            id="player-name"
+            placeholder="e.g. Dr. Watson"
+            maxlength="32"
+            autocomplete="off"
+            autofocus
+          >
+          <div class="error-msg" id="name-error">Please enter your name</div>
+        </div>
+
+        <div class="form-group">
+          <label>Choose Your Avatar</label>
+          <div class="avatar-grid" id="avatar-grid">
+            <div class="avatar-opt selected" data-avatar="🧬">🧬</div>
+            <div class="avatar-opt" data-avatar="🔬">🔬</div>
+            <div class="avatar-opt" data-avatar="🧫">🧫</div>
+            <div class="avatar-opt" data-avatar="🧪">🧪</div>
+            <div class="avatar-opt" data-avatar="🦠">🦠</div>
+            <div class="avatar-opt" data-avatar="🔭">🔭</div>
+            <div class="avatar-opt" data-avatar="💊">💊</div>
+            <div class="avatar-opt" data-avatar="🧠">🧠</div>
+            <div class="avatar-opt" data-avatar="🦋">🦋</div>
+            <div class="avatar-opt" data-avatar="🌿">🌿</div>
+            <div class="avatar-opt" data-avatar="🐭">🐭</div>
+            <div class="avatar-opt" data-avatar="🐟">🐟</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="start-btn" onclick="startLab()" style="width:100%;justify-content:center;margin-top:4px">
+          Start Lab →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">🧪</div>
+      <h3>20 Lab Challenges</h3>
+      <p>From print statements to full genomic pipelines — all framed in life sciences context.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>XP & Progression</h3>
+      <p>Earn XP, level up from Nucleotide to Ecosystem, unlock achievements as you code.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3>Live Leaderboard</h3>
+      <p>See how you rank against your colleagues in real time. May the best scientist win!</p>
+    </div>
+  </section>
+</div>
+
+<script>
+  let selectedAvatar = '🧬';
+
+  // Avatar selection
+  document.getElementById('avatar-grid').addEventListener('click', e => {
+    const opt = e.target.closest('.avatar-opt');
+    if (!opt) return;
+    document.querySelectorAll('.avatar-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedAvatar = opt.dataset.avatar;
+  });
+
+  // Enter key
+  document.getElementById('player-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startLab();
+  });
+
+  // Check if already logged in
+  const stored = JSON.parse(localStorage.getItem('pylab_player') || 'null');
+  if (stored?.id) {
+    // Offer to continue
+    const nameInput = document.getElementById('player-name');
+    nameInput.value = stored.name || '';
+    const startBtn = document.getElementById('start-btn');
+    startBtn.textContent = '▶ Continue as ' + stored.name;
+  }
+
+  async function startLab() {
+    const nameInput = document.getElementById('player-name');
+    const name = nameInput.value.trim();
+    const errEl = document.getElementById('name-error');
+
+    if (!name) {
+      errEl.style.display = 'block';
+      nameInput.focus();
+      return;
+    }
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById('start-btn');
+    btn.disabled = true;
+    btn.textContent = 'Loading…';
+
+    try {
+      const res = await fetch('/api/players', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, avatar: selectedAvatar }),
+      });
+      if (!res.ok) throw new Error('Server error');
+      const player = await res.json();
+      localStorage.setItem('pylab_player', JSON.stringify({ id: player.id, name: player.name, avatar: player.avatar }));
+      window.location.href = '/game';
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Start Lab →';
+      errEl.textContent = 'Could not connect to server. Is PyLab running?';
+      errEl.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyLab — Game</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- Python loading overlay -->
+<div id="py-loading">
+  <div style="font-size:2.5rem">🧬</div>
+  <div class="spinner"></div>
+  <p>Initialising <strong>Python runtime</strong>…</p>
+  <p style="font-size:0.78rem;color:var(--dim)">Pyodide is loading — this takes ~10 s on first visit</p>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Main game layout -->
+<div class="game-page">
+
+  <!-- ── Topbar ─────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-logo">🧬 <span>Py</span>Lab</div>
+
+    <div class="topbar-player">
+      <span class="topbar-avatar" id="topbar-avatar">🧬</span>
+      <div>
+        <div class="topbar-name" id="topbar-name">—</div>
+        <div class="topbar-level" id="topbar-level">Nucleotide</div>
+      </div>
+    </div>
+
+    <div class="topbar-xp">
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-fill" id="xp-bar-fill" style="width:0%"></div>
+      </div>
+      <span class="xp-label" id="xp-label">0 XP</span>
+    </div>
+
+    <div class="topbar-actions">
+      <a href="/leaderboard" class="btn btn-ghost btn-sm" target="_blank">🏆 Leaderboard</a>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <!-- ── Game body ──────────────────────────────── -->
+  <div class="game-body">
+
+    <!-- Left: challenge list -->
+    <aside class="challenge-sidebar">
+      <div class="sidebar-header">Challenges</div>
+      <div class="challenge-list" id="challenge-list"></div>
+    </aside>
+
+    <!-- Centre: challenge panel -->
+    <main class="main-panel">
+
+      <!-- Top half: description + editor -->
+      <div class="panel-top">
+
+        <!-- Description -->
+        <div class="description-pane" id="description-pane">
+          <div class="empty-state">
+            <div class="empty-state-icon">🧪</div>
+            <p>Select a challenge to begin</p>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div class="editor-pane">
+          <div class="editor-toolbar">
+            <button class="btn btn-primary btn-sm" id="run-btn" onclick="runCode()">
+              ▶ Run Code
+            </button>
+            <span style="color:var(--muted);font-size:0.78rem">Ctrl+Enter</span>
+            <div class="editor-lang">
+              <div class="python-dot"></div>
+              Python 3
+            </div>
+          </div>
+          <div id="editor-container"></div>
+        </div>
+
+      </div><!-- /panel-top -->
+
+      <!-- Bottom half: tests + output -->
+      <div class="panel-bottom">
+
+        <!-- Test results -->
+        <div class="test-results-pane">
+          <h3>Test Results</h3>
+          <div class="result-summary idle" id="result-summary">
+            Run your code to see results
+          </div>
+          <div id="test-results-list"></div>
+        </div>
+
+        <!-- stdout -->
+        <div class="stdout-pane">
+          <h3>Output</h3>
+          <pre class="stdout-content" id="stdout-content">
+<span class="stdout-placeholder">Output will appear here…</span>
+          </pre>
+        </div>
+
+      </div><!-- /panel-bottom -->
+
+    </main><!-- /main-panel -->
+
+    <!-- Right: live leaderboard -->
+    <aside class="lb-sidebar">
+      <div class="lb-header">
+        <span>Leaderboard</span>
+        <div class="lb-live"><div class="live-dot"></div> Live</div>
+      </div>
+      <div class="lb-list" id="lb-list">
+        <div style="padding:20px;text-align:center;color:var(--dim);font-size:0.82rem">
+          Loading…
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /game-body -->
+</div><!-- /game-page -->
+
+<!-- Monaco editor loader -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.47.0/min/vs/loader.js"></script>
+<!-- Socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+<!-- Game controller -->
+<script src="/js/app.js"></script>
+<script>
+  // Boot: init editor after app.js sets up state
+  document.addEventListener('DOMContentLoaded', () => {
+    initEditor();
+  });
+
+  function logout() {
+    localStorage.removeItem('pylab_player');
+    window.location.href = '/';
+  }
+</script>
+
+</body>
+</html>
