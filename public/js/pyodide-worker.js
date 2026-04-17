@@ -21,6 +21,14 @@ self.onmessage = async (event) => {
     return;
   }
 
+  // Lazily load any packages the code imports (numpy, pandas, scipy, etc.)
+  // This downloads from CDN on first use and is cached by the browser thereafter.
+  try {
+    await pyodide.loadPackagesFromImports(code);
+  } catch (_) {
+    // Non-fatal: unknown imports are surfaced as ImportError when code runs
+  }
+
   try {
     pyodide.globals.set('_student_code', code);
     pyodide.globals.set('_tests_json', testsJson);

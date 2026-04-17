@@ -35,8 +35,10 @@ In Python, \`print()\` is the universal output function. It adds a newline autom
 
 **Key difference:** \`print()\` in Python auto-adds a newline and converts non-strings for you — unlike R's \`cat()\` which needs explicit \`\\n\`.`,
     starterCode: `# In R: cat("Hello from the lab!\\n")
-# In Python:
-print("Hello from the lab!")
+# In Python, print() auto-adds a newline — no \\n needed.
+
+# TODO: Complete this to print exactly: Hello from the lab!
+print("???")  # ← replace ??? with the correct string
 `,
     hints: [
       'Use print() with the string in quotes.',
@@ -82,14 +84,14 @@ seq[-1]   # last character
 - \`last_base\` = the last nucleotide (use negative indexing)`,
     starterCode: `sequence = "ATGCGTAAC"
 
-# First base (index 0, not 1 like R!)
-first_base = sequence[0]
+# Python is 0-indexed — the BIG difference from R!
+# R: substr(sequence, 1, 1)   → "A"   (1-indexed)
+# Python: sequence[0]          → "A"   (0-indexed!)
 
-# First codon: indices 0, 1, 2 (end is exclusive)
-codon = sequence[0:3]
-
-# Last base: negative indexing
-last_base = sequence[-1]
+# TODO: Replace "???" with the correct Python expression
+first_base = "???"   # = sequence[?]   — which index is first in Python?
+codon      = "???"   # = sequence[?:?] — which slice gives "ATG"?
+last_base  = "???"   # = sequence[?]   — use negative indexing
 
 print(first_base, codon, last_base)
 `,
@@ -142,14 +144,17 @@ In Python: \`type(x).__name__\` gives the type as a string.
     starterCode: `gene_count = 847
 expression_level = 3.14
 p_value = 0.032
-gene_name = "BRCA1"
 
-# Get type names as strings
-gene_count_type = type(gene_count).__name__   # "int"
-expression_type = type(expression_level).__name__
+# In R: class(gene_count) → "numeric"
+# In Python: type(x).__name__ → "int", "float", "str", "bool"
 
-# Boolean comparison (like R's logical, but True/False not TRUE/FALSE)
-is_significant = p_value < 0.05
+# TODO: Replace "???" with the correct expression
+gene_count_type = "???"   # ← type(???).__name__  — what goes inside type()?
+expression_type = "???"   # ← type(???).__name__  — same for expression_level
+
+# In R: p_value < 0.05 returns TRUE/FALSE
+# In Python: returns True/False (capital, no quotes)
+is_significant = "???"   # ← write the boolean comparison
 
 print(gene_count_type, expression_type, is_significant)
 `,
@@ -206,15 +211,21 @@ x == None      # works but is bad practice
     starterCode: `import math
 
 def safe_log2fc(treatment, control):
-    if treatment is None or control is None:
+    # In Python, None does NOT propagate — arithmetic raises TypeError!
+    # Must check None BEFORE arithmetic (unlike R where NA propagates silently).
+    # Use 'is None' not '== None'
+
+    # TODO: Check for None inputs (treatment or control)
+    if "???" or "???":   # ← treatment is None OR control is None
         return None
-    if control == 0:
+    # TODO: Check for zero denominator
+    if "???":             # ← control equals zero
         return None
     return math.log2(treatment / control)
 
-print(safe_log2fc(8.0, 2.0))   # 2.0
-print(safe_log2fc(None, 2.0))  # None
-print(safe_log2fc(4.0, 0))     # None
+print(safe_log2fc(8.0, 2.0))   # should print 2.0
+print(safe_log2fc(None, 2.0))  # should print None
+print(safe_log2fc(4.0, 0))     # should print None
 `,
     hints: [
       'Use "is None" not "== None" — PEP 8 style and safer.',
@@ -265,11 +276,17 @@ Produce:
 - \`fields\` = list of all 3 stripped fields`,
     starterCode: `raw = "  brca1 | Breast cancer 1 | chr17:43044295-43125483  "
 
-# Strip outer whitespace, then split on "|"
-fields = [f.strip() for f in raw.strip().split("|")]
+# In R: trimws() + strsplit() + toupper()
+# In Python: .strip() + .split() + .upper() — methods on the string itself
 
-gene_id = fields[0].upper()
-chrom = fields[2]
+# TODO: Split on "|" and strip whitespace from each field
+fields = "???"   # ← [f.strip() for f in raw.strip().split("|")]
+
+# TODO: Uppercase the gene name (first field, index 0)
+gene_id = "???"   # ← fields[?].upper()
+
+# TODO: Get the chromosome location (third field, index ?)
+chrom = "???"    # ← fields[?]
 
 print(gene_id)
 print(chrom)
@@ -659,15 +676,17 @@ for i, gene in enumerate(genes, start=1):  # start=1 → like R!
 - \`cumulative_sum\` = running total list`,
     starterCode: `samples = [1.2, 6.8, 3.4, 9.1, 0.5, 7.3, 2.2, 5.8]
 
-# enumerate gives (0-based index, value)
-high_expression_samples = [(i, val) for i, val in enumerate(samples) if val > 5.0]
+# TODO: Use enumerate() to get 0-based (index, value) pairs where value > 5.0
+# In R: cbind(seq_along(samples)-1, samples)[samples > 5, ]
+# In Python: enumerate() gives (index, value) pairs
+high_expression_samples = "???"  # ← [(i, val) for i, val in enumerate(samples) if val > 5.0]
 
-# Cumulative sum
+# TODO: Build a cumulative sum list
 cumulative_sum = []
 total = 0
 for val in samples:
     total += val
-    cumulative_sum.append(round(total, 2))
+    cumulative_sum.append("???")  # ← what should we append? (hint: round(total, 2))
 
 print("High:", high_expression_samples)
 print("Cumulative:", cumulative_sum)
@@ -732,10 +751,14 @@ names = [gene for gene, lfc, padj in results if lfc > 1]
     ("RB1",   -2.1, 0.008),
 ]
 
-upreg    = [gene for gene, lfc, padj in results if lfc > 1]
-downreg  = [gene for gene, lfc, padj in results if lfc < -1]
-abs_fc   = [abs(lfc) for gene, lfc, padj in results]
-sig_genes = [gene for gene, lfc, padj in results if abs(lfc) > 1 and padj < 0.05]
+# In R: results[results$log2fc > 1, "gene"]
+# In Python: [gene for gene, lfc, padj in results if lfc > 1]
+
+# TODO: Complete each list comprehension — unpack (gene, lfc, padj) in the for clause
+upreg     = "???"   # ← genes with lfc > 1
+downreg   = "???"   # ← genes with lfc < -1
+abs_fc    = "???"   # ← absolute fold-change for ALL genes: [abs(lfc) for ...]
+sig_genes = "???"   # ← abs(lfc) > 1 AND padj < 0.05 (use 'and', not R's &)
 
 print("Up:", upreg)
 print("Down:", downreg)
@@ -790,13 +813,15 @@ def calc_stats(values, ddof=1):    # default arg same syntax
 
 **Your task:** Write \`calc_stats(values, ddof=1)\` returning a dict with \`mean\`, \`std\`, \`min\`, \`max\`, \`n\`.`,
     starterCode: `def calc_stats(values, ddof=1):
-    n    = len(values)
-    mean = sum(values) / n
-    var  = sum((x - mean) ** 2 for x in values) / (n - ddof)
-    std  = var ** 0.5
+    n = len(values)
+    # TODO: Calculate mean, variance, and standard deviation
+    # Remember: Python requires explicit return (unlike R's implicit last-expression return)
+    mean = None   # ← sum(values) / n
+    var  = None   # ← sum((x - mean)**2 for x in values) / (n - ddof)
+    std  = None   # ← var ** 0.5
     return {
-        "mean": round(mean, 4),
-        "std":  round(std, 4),
+        "mean": mean,
+        "std":  std,
         "min":  min(values),
         "max":  max(values),
         "n":    n,
@@ -857,12 +882,16 @@ f"{value:,}"                     # 1,234,567
 \`"BRCA1    | log2FC: -2.30 | padj: 1.00e-03 | mean: 1,234.5"\`
 (gene left-padded to 8 chars, log2fc 2dp with sign, padj scientific, mean comma+1dp)`,
     starterCode: `def format_deseq_row(gene, log2fc, padj, basemean):
-    return (
-        f"{gene:<8} | "
-        f"log2FC: {log2fc:+.2f} | "
-        f"padj: {padj:.2e} | "
-        f"mean: {basemean:,.1f}"
-    )
+    # TODO: Return a formatted string using f-string format specifiers
+    # Expected output for ("BRCA1", -2.3, 0.001, 1234.5):
+    #   "BRCA1    | log2FC: -2.30 | padj: 1.00e-03 | mean: 1,234.5"
+    #
+    # Format hints:
+    #   {gene:<8}        → left-align in 8-char field
+    #   {log2fc:+.2f}    → always show sign (+/-), 2 decimal places
+    #   {padj:.2e}       → scientific notation (e.g. 1.00e-03)
+    #   {basemean:,.1f}  → comma separator, 1 decimal place
+    return "???"   # ← write the complete f-string here
 
 print(format_deseq_row("BRCA1", -2.3, 0.001, 1234.5))
 print(format_deseq_row("MYC", 3.1, 0.00001, 45678.9))
@@ -914,15 +943,18 @@ except Exception as e:   # catch-all
     if not raw or raw.strip() in ("N/A", "NA", ""):
         return None
     try:
-        value = float(raw.strip())
-        if value < 0:
+        # TODO: Convert the raw string to a float
+        # In R: as.numeric(trimws(raw)) — in Python: float(???)
+        value = float("???")   # ← replace "???" with raw.strip()
+        # TODO: Negative values should return None
+        if "???":              # ← write the condition: value < 0
             return None
         return value
     except ValueError:
         return None
 
-tests = ["3.14", "  6.2  ", "N/A", "", "not_a_number", "-1.5", "0", "1e4"]
-results = [parse_expression_value(x) for x in tests]
+tests_input = ["3.14", "  6.2  ", "N/A", "", "not_a_number", "-1.5", "0", "1e4"]
+results = [parse_expression_value(x) for x in tests_input]
 print(results)
 `,
     hints: [
@@ -1286,10 +1318,14 @@ Understanding the format: lines starting with \`>\` are headers; subsequent line
         if line.startswith(">"):
             if current_id is not None:
                 records.append({"id": current_id, "seq": "".join(current_seq)})
-            current_id = line[1:].split()[0]
+            # TODO: Extract the record ID from the header line
+            # Header format: ">BRCA1 breast cancer 1" → id = "BRCA1"
+            # Hint: remove ">" with line[1:], then take the first word with .split()[0]
+            current_id = "???"   # ← line[1:].split()[0]
             current_seq = []
         else:
-            current_seq.append(line)
+            # TODO: Accumulate sequence lines into current_seq
+            current_seq.append("???")  # ← append the sequence line itself
     if current_id is not None:
         records.append({"id": current_id, "seq": "".join(current_seq)})
     return records
@@ -1311,7 +1347,7 @@ def gc_percent(seq):
     return round(gc / len(seq) * 100, 1)
 
 gc_contents = {r["id"]: gc_percent(r["seq"]) for r in records}
-longest_seq_id = max(records, key=lambda r: len(r["seq"]))["id"]
+longest_seq_id = max(records, key=lambda r: len(r["seq"]))["id"] if records else None
 
 print(gc_contents)
 print(longest_seq_id)
@@ -1376,12 +1412,18 @@ sequence = (
 )
 
 def count_kmers(seq, k):
-    return dict(Counter(seq[i:i+k] for i in range(len(seq) - k + 1)))
+    # TODO: Count all k-mers using a sliding window
+    # A k-mer starting at position i: seq[i:i+k]
+    # Number of valid positions: len(seq) - k + 1
+    # Hint: dict(Counter(seq[i:i+k] for i in range(len(seq) - k + 1)))
+    return {}   # ← replace {} with your implementation
 
 kmer_counts = count_kmers(sequence, 3)
 top_3mers = sorted(kmer_counts.items(), key=lambda x: x[1], reverse=True)[:5]
 cpg_sites = count_kmers(sequence, 2).get("CG", 0)
-kmer_diversity = round(len(kmer_counts) / 64, 3)
+
+# TODO: Calculate k-mer diversity = unique 3-mers / 64 (all possible), round to 3dp
+kmer_diversity = "???"   # ← round(len(kmer_counts) / 64, 3)
 
 print("Top 3-mers:", top_3mers)
 print("CpG sites:", cpg_sites)
@@ -1453,9 +1495,13 @@ raw_results = [
 ]
 
 def direction(log2fc, padj):
-    if abs(log2fc) > 1 and padj < 0.05:
-        return "up" if log2fc > 0 else "down"
-    return "ns"
+    # TODO: Return "up", "down", or "ns" based on significance
+    # Rules:
+    #   "up":   abs(log2fc) > 1 AND padj < 0.05 AND log2fc > 0
+    #   "down": abs(log2fc) > 1 AND padj < 0.05 AND log2fc < 0
+    #   "ns":   everything else (not significant)
+    # In R: case_when(log2fc > 1 & padj < 0.05 ~ "up", ...)
+    return "ns"   # ← replace with the actual logic
 
 # Filter, add direction, sort
 clean_results = sorted(

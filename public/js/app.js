@@ -6,7 +6,10 @@
 const state = {
   player: null,
   challenges: [],
+  examples: [],
   currentId: null,
+  currentExampleId: null,
+  mode: 'challenge', // 'challenge' | 'example'
   worker: null,
   workerReady: false,
   isRunning: false,
@@ -51,8 +54,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const challenges = await api('/api/challenges');
+  const [challenges, examples] = await Promise.all([
+    api('/api/challenges'),
+    api('/api/examples'),
+  ]);
   state.challenges = challenges;
+  state.examples = examples;
+  renderExamplesList();
   renderChallengeList();
 
   initWorker();
@@ -162,6 +170,90 @@ function initSocket() {
   });
 }
 
+// ─── Sidebar section toggle ───────────────────────────
+function toggleSection(name) {
+  const body    = document.getElementById(name + '-list');
+  const chevron = document.getElementById(name + '-chevron');
+  if (!body || !chevron) return;
+  const collapsed = body.classList.toggle('collapsed');
+  chevron.classList.toggle('open', !collapsed);
+}
+
+// ─── Examples list ────────────────────────────────────
+function renderExamplesList() {
+  const container = document.getElementById('examples-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  state.examples.forEach(ex => {
+    const item = document.createElement('div');
+    item.className = 'example-item' + (state.currentExampleId === ex.id ? ' active' : '');
+    item.dataset.exId = ex.id;
+    item.innerHTML = `
+      <span class="ci-icon">${ex.icon}</span>
+      <div class="ci-info">
+        <div class="ci-title">${ex.title}</div>
+        <div class="ci-xp">📚 Example</div>
+      </div>
+    `;
+    item.addEventListener('click', () => selectExample(ex.id));
+    container.appendChild(item);
+  });
+
+  // Show examples section as collapsed by default; challenges open
+  const exBody    = document.getElementById('examples-list');
+  const exChevron = document.getElementById('examples-chevron');
+  if (exBody && exChevron) {
+    exBody.classList.add('collapsed');
+    exChevron.classList.remove('open');
+  }
+}
+
+// ─── Select example ───────────────────────────────────
+function selectExample(id) {
+  state.mode = 'example';
+  state.currentExampleId = id;
+  state.currentId = null;
+
+  const example = state.examples.find(e => e.id === id);
+  if (!example) return;
+
+  document.querySelectorAll('.example-item').forEach(el => {
+    el.classList.toggle('active', Number(el.dataset.exId) === id);
+  });
+  document.querySelectorAll('.challenge-item').forEach(el => el.classList.remove('active'));
+
+  document.getElementById('description-pane').innerHTML = `
+    <div class="example-mode-banner">📚 Example mode — run, modify, and explore freely!</div>
+    <div class="challenge-header">
+      <span class="challenge-icon-big">${example.icon}</span>
+      <div>
+        <h1>${example.title}</h1>
+        <div class="challenge-meta">
+          <span class="tag tag-example">Example</span>
+          <span style="font-size:0.82rem;color:var(--muted)">${example.subtitle}</span>
+        </div>
+      </div>
+    </div>
+    <div class="challenge-desc" id="challenge-md"></div>
+  `;
+  renderMarkdown(example.description, document.getElementById('challenge-md'));
+
+  if (state.editor) {
+    state.editor.setValue(example.code);
+    state.editor.setScrollPosition({ scrollTop: 0 });
+  }
+
+  clearOutput();
+
+  const summary = document.getElementById('result-summary');
+  if (summary) {
+    summary.className = 'result-summary idle';
+    summary.textContent = 'Example mode — run the code to see output, no tests';
+  }
+  document.getElementById('test-results-list').innerHTML = '';
+}
+
 // ─── Challenge list ──────────────────────────────────
 function renderChallengeList() {
   const container = document.getElementById('challenge-list');
@@ -207,8 +299,11 @@ function renderChallengeList() {
 
 // ─── Select challenge ─────────────────────────────────
 function selectChallenge(id) {
+  state.mode = 'challenge';
+  state.currentExampleId = null;
   state.currentId = id;
   state.hintsRevealed = 0;
+  document.querySelectorAll('.example-item').forEach(el => el.classList.remove('active'));
   const challenge = state.challenges.find(c => c.id === id);
   if (!challenge) return;
 
@@ -355,8 +450,10 @@ function initEditor() {
 // ─── Run code ─────────────────────────────────────────
 function runCode() {
   if (state.isRunning || !state.workerReady || !state.editor) return;
-  const challenge = state.challenges.find(c => c.id === state.currentId);
-  if (!challenge) return;
+
+  const isExample = state.mode === 'example';
+  const challenge = !isExample && state.challenges.find(c => c.id === state.currentId);
+  if (!isExample && !challenge) return;
 
   const code = state.editor.getValue();
   state.isRunning = true;
@@ -374,9 +471,9 @@ function runCode() {
 
   state.worker.postMessage({
     type: 'run',
-    id: String(challenge.id),
+    id: isExample ? `ex-${state.currentExampleId}` : String(challenge.id),
     code,
-    testsJson: JSON.stringify(challenge.tests),
+    testsJson: isExample ? '[]' : JSON.stringify(challenge.tests),
   });
 }
 
@@ -413,6 +510,19 @@ function showOutput(text, isError = false) {
 // ─── Handle results ───────────────────────────────────
 function handleResult(data) {
   const { stdout, error, testResults, allPassed } = data;
+
+  // Example mode: just show output, no tests
+  if (state.mode === 'example') {
+    showOutput(error ? cleanTraceback(error) : (stdout || '(no output)'), !!error);
+    const summary = document.getElementById('result-summary');
+    if (summary) {
+      summary.className = error ? 'result-summary has-fail' : 'result-summary all-pass';
+      summary.textContent = error ? '❌ Code error — check the output panel' : '✅ Ran successfully';
+    }
+    document.getElementById('test-results-list').innerHTML = '';
+    return;
+  }
+
   const challenge = state.challenges.find(c => c.id === state.currentId);
 
   showOutput(error ? cleanTraceback(error) : (stdout || '(no output)'), !!error);
@@ -704,3 +814,5 @@ window.runCode = runCode;
 window.toggleHints = toggleHints;
 window.revealHint = revealHint;
 window.initEditor = initEditor;
+window.toggleSection = toggleSection;
+window.selectExample = selectExample;

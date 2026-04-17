@@ -83,10 +83,31 @@
   <!-- ── Game body ──────────────────────────────── -->
   <div class="game-body">
 
-    <!-- Left: challenge list -->
+    <!-- Left: examples + challenge list -->
     <aside class="challenge-sidebar">
-      <div class="sidebar-header">Challenges</div>
-      <div class="challenge-list" id="challenge-list"></div>
+      <div class="sidebar-scroll">
+
+        <!-- Examples section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-hdr" id="examples-toggle" onclick="toggleSection('examples')">
+            <span class="sidebar-section-title">📚 Examples</span>
+            <span class="sidebar-section-count" id="examples-count">10</span>
+            <span class="sidebar-section-chevron" id="examples-chevron"></span>
+          </div>
+          <div class="sidebar-section-body" id="examples-list"></div>
+        </div>
+
+        <!-- Challenges section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-hdr" id="challenges-toggle" onclick="toggleSection('challenges')">
+            <span class="sidebar-section-title">🧬 Challenges</span>
+            <span class="sidebar-section-count" id="challenges-count">30</span>
+            <span class="sidebar-section-chevron open" id="challenges-chevron"></span>
+          </div>
+          <div class="sidebar-section-body" id="challenge-list"></div>
+        </div>
+
+      </div>
     </aside>
 
     <!-- Centre: challenge panel -->

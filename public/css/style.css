@@ -365,20 +365,113 @@ a:hover { text-decoration: underline; }
   overflow: hidden;
 }
 
-.sidebar-header {
-  padding: 12px 14px 8px;
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ─── Collapsible sidebar sections ──────────────── */
+.sidebar-section {
   border-bottom: 1px solid var(--border);
-  font-size: 0.78rem;
-  color: var(--muted);
-  font-weight: 600;
+}
+
+.sidebar-section-hdr {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px 8px;
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 1;
+  transition: background 0.12s;
+}
+.sidebar-section-hdr:hover { background: var(--bg3); }
+
+.sidebar-section-title {
+  flex: 1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.sidebar-section-count {
+  font-size: 0.65rem;
+  background: var(--bg3);
+  color: var(--dim);
+  padding: 1px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar-section-chevron {
+  width: 14px;
+  height: 14px;
+  border-right: 2px solid var(--dim);
+  border-bottom: 2px solid var(--dim);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.sidebar-section-chevron.open {
+  transform: rotate(-135deg);
+}
+
+.sidebar-section-body {
+  overflow: hidden;
+  padding: 6px 6px 4px;
+}
+.sidebar-section-body.collapsed {
+  display: none;
 }
 
 .challenge-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px 6px;
+  /* body is now .sidebar-section-body — keep this for compatibility */
+}
+
+/* ─── Example items ──────────────────────────────── */
+.example-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border: 1px solid transparent;
+}
+.example-item:hover { background: var(--bg3); }
+.example-item.active {
+  background: #58a6ff15;
+  border-color: #58a6ff40;
+}
+.example-item .ci-xp { color: var(--blue); }
+
+/* ─── Example mode banner ────────────────────────── */
+.example-mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #58a6ff10;
+  border: 1px solid #58a6ff40;
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  color: var(--blue);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tag-example {
+  background: #58a6ff20;
+  color: var(--blue);
+  border: 1px solid #58a6ff44;
 }
 
 .tier-group { margin-bottom: 4px; }
