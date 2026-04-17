@@ -474,6 +474,45 @@ a:hover { text-decoration: underline; }
   border: 1px solid #58a6ff44;
 }
 
+/* ─── Project (mini-project) items ──────────────── */
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.12s;
+  border: 1px solid transparent;
+}
+.project-item:hover { background: var(--bg3); }
+.project-item.active {
+  background: #e3b34115;
+  border-color: #e3b34140;
+}
+.project-item .ci-xp { color: var(--gold); }
+
+/* ─── Project mode banner ────────────────────────── */
+.project-mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: #e3b34110;
+  border: 1px solid #e3b34140;
+  color: var(--gold);
+}
+
+.tag-project {
+  background: #e3b34120;
+  color: var(--gold);
+  border: 1px solid #e3b34144;
+}
+
 .tier-group { margin-bottom: 4px; }
 
 .tier-label {

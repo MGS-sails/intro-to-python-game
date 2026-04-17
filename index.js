@@ -9,6 +9,7 @@ const io = new Server(server);
 const db = require('./src/database');
 const challenges = require('./src/challenges');
 const examples = require('./src/examples');
+const projectSteps = require('./src/project');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -26,6 +27,15 @@ app.get('/api/players/:id', (req, res) => {
   const player = db.getPlayer(Number(req.params.id));
   if (!player) return res.status(404).json({ error: 'Player not found' });
   res.json(player);
+});
+
+// ── Project steps ─────────────────────────────────────
+app.get('/api/project', (_req, res) => {
+  res.json(projectSteps.map(s => ({
+    id: s.id, icon: s.icon, title: s.title,
+    subtitle: s.subtitle, description: s.description, code: s.code,
+    tests: s.tests.map(t => ({ description: t.description, testCode: t.testCode })),
+  })));
 });
 
 // ── Examples ──────────────────────────────────────────

@@ -7,9 +7,11 @@ const state = {
   player: null,
   challenges: [],
   examples: [],
+  projectSteps: [],
   currentId: null,
   currentExampleId: null,
-  mode: 'challenge', // 'challenge' | 'example'
+  currentProjectId: null,
+  mode: 'challenge', // 'challenge' | 'example' | 'project'
   worker: null,
   workerReady: false,
   isRunning: false,
@@ -54,13 +56,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const [challenges, examples] = await Promise.all([
+  const [challenges, examples, projectSteps] = await Promise.all([
     api('/api/challenges'),
     api('/api/examples'),
+    api('/api/project'),
   ]);
   state.challenges = challenges;
   state.examples = examples;
+  state.projectSteps = projectSteps;
   renderExamplesList();
+  renderProjectList();
   renderChallengeList();
 
   initWorker();
@@ -209,11 +214,86 @@ function renderExamplesList() {
   }
 }
 
+// ─── Project list ─────────────────────────────────────
+function renderProjectList() {
+  const container = document.getElementById('project-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  state.projectSteps.forEach((step, i) => {
+    const item = document.createElement('div');
+    item.className = 'project-item' + (state.currentProjectId === step.id ? ' active' : '');
+    item.dataset.projId = step.id;
+    item.innerHTML = `
+      <span class="ci-icon">${step.icon}</span>
+      <div class="ci-info">
+        <div class="ci-title">${step.title}</div>
+        <div class="ci-xp">🔬 Step ${i + 1} / 5</div>
+      </div>
+    `;
+    item.addEventListener('click', () => selectProjectStep(step.id));
+    container.appendChild(item);
+  });
+
+  container.classList.add('collapsed');
+  const chevron = document.getElementById('project-chevron');
+  if (chevron) chevron.classList.remove('open');
+}
+
+// ─── Select project step ──────────────────────────────
+function selectProjectStep(id) {
+  state.mode = 'project';
+  state.currentProjectId = id;
+  state.currentId = null;
+  state.currentExampleId = null;
+
+  const step = state.projectSteps.find(s => s.id === id);
+  if (!step) return;
+
+  document.querySelectorAll('.project-item').forEach(el => {
+    el.classList.toggle('active', Number(el.dataset.projId) === id);
+  });
+  document.querySelectorAll('.challenge-item, .example-item').forEach(el => el.classList.remove('active'));
+
+  const stepIdx = state.projectSteps.findIndex(s => s.id === id) + 1;
+
+  document.getElementById('description-pane').innerHTML = `
+    <div class="project-mode-banner">🔬 Mini-Project — fill in the gaps, run the tests</div>
+    <div class="challenge-header">
+      <span class="challenge-icon-big">${step.icon}</span>
+      <div>
+        <h1>${step.title}</h1>
+        <div class="challenge-meta">
+          <span class="tag tag-project">Step ${stepIdx} / 5</span>
+          <span style="font-size:0.82rem;color:var(--muted)">${step.subtitle}</span>
+        </div>
+      </div>
+    </div>
+    <div class="challenge-desc" id="challenge-md"></div>
+  `;
+  renderMarkdown(step.description, document.getElementById('challenge-md'));
+
+  if (state.editor) {
+    state.editor.setValue(step.code);
+    state.editor.setScrollPosition({ scrollTop: 0 });
+  }
+
+  clearOutput();
+
+  const summary = document.getElementById('result-summary');
+  if (summary) {
+    summary.className = 'result-summary idle';
+    summary.textContent = 'Fill in the gaps and run your code';
+  }
+  document.getElementById('test-results-list').innerHTML = '';
+}
+
 // ─── Select example ───────────────────────────────────
 function selectExample(id) {
   state.mode = 'example';
   state.currentExampleId = id;
   state.currentId = null;
+  state.currentProjectId = null;
 
   const example = state.examples.find(e => e.id === id);
   if (!example) return;
@@ -221,7 +301,7 @@ function selectExample(id) {
   document.querySelectorAll('.example-item').forEach(el => {
     el.classList.toggle('active', Number(el.dataset.exId) === id);
   });
-  document.querySelectorAll('.challenge-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.challenge-item, .project-item').forEach(el => el.classList.remove('active'));
 
   document.getElementById('description-pane').innerHTML = `
     <div class="example-mode-banner">📚 Example mode — run, modify, and explore freely!</div>
@@ -301,9 +381,10 @@ function renderChallengeList() {
 function selectChallenge(id) {
   state.mode = 'challenge';
   state.currentExampleId = null;
+  state.currentProjectId = null;
   state.currentId = id;
   state.hintsRevealed = 0;
-  document.querySelectorAll('.example-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.example-item, .project-item').forEach(el => el.classList.remove('active'));
   const challenge = state.challenges.find(c => c.id === id);
   if (!challenge) return;
 
@@ -452,8 +533,12 @@ function runCode() {
   if (state.isRunning || !state.workerReady || !state.editor) return;
 
   const isExample = state.mode === 'example';
-  const challenge = !isExample && state.challenges.find(c => c.id === state.currentId);
-  if (!isExample && !challenge) return;
+  const isProject = state.mode === 'project';
+  const challenge = !isExample && !isProject && state.challenges.find(c => c.id === state.currentId);
+  const projectStep = isProject && state.projectSteps.find(s => s.id === state.currentProjectId);
+
+  if (!isExample && !isProject && !challenge) return;
+  if (isProject && !projectStep) return;
 
   const code = state.editor.getValue();
   state.isRunning = true;
@@ -471,9 +556,9 @@ function runCode() {
 
   state.worker.postMessage({
     type: 'run',
-    id: isExample ? `ex-${state.currentExampleId}` : String(challenge.id),
+    id: isExample ? `ex-${state.currentExampleId}` : isProject ? `proj-${state.currentProjectId}` : String(challenge.id),
     code,
-    testsJson: isExample ? '[]' : JSON.stringify(challenge.tests),
+    testsJson: isExample ? '[]' : isProject ? JSON.stringify(projectStep.tests) : JSON.stringify(challenge.tests),
   });
 }
 
@@ -523,7 +608,10 @@ function handleResult(data) {
     return;
   }
 
-  const challenge = state.challenges.find(c => c.id === state.currentId);
+  const isProject = state.mode === 'project';
+  const item = isProject
+    ? state.projectSteps.find(s => s.id === state.currentProjectId)
+    : state.challenges.find(c => c.id === state.currentId);
 
   showOutput(error ? cleanTraceback(error) : (stdout || '(no output)'), !!error);
 
@@ -541,9 +629,15 @@ function handleResult(data) {
   const total = testResults.length;
 
   summary.className = allPassed ? 'result-summary all-pass' : 'result-summary has-fail';
-  summary.innerHTML = allPassed
-    ? `✅ All ${total} test${total !== 1 ? 's' : ''} passed! &nbsp;<span style="color:var(--gold)">+${challenge?.xp} XP</span>`
-    : `❌ ${passed} / ${total} tests passed`;
+  if (isProject) {
+    summary.innerHTML = allPassed
+      ? `✅ All ${total} test${total !== 1 ? 's' : ''} passed! Step complete!`
+      : `❌ ${passed} / ${total} tests passed`;
+  } else {
+    summary.innerHTML = allPassed
+      ? `✅ All ${total} test${total !== 1 ? 's' : ''} passed! &nbsp;<span style="color:var(--gold)">+${item?.xp} XP</span>`
+      : `❌ ${passed} / ${total} tests passed`;
+  }
 
   testResults.forEach(t => {
     const div = document.createElement('div');
@@ -558,8 +652,8 @@ function handleResult(data) {
     list.appendChild(div);
   });
 
-  if (allPassed && challenge && !state.completed.has(challenge.id)) {
-    onChallengeComplete(challenge);
+  if (allPassed && !isProject && item && !state.completed.has(item.id)) {
+    onChallengeComplete(item);
   }
 }
 
@@ -816,3 +910,4 @@ window.revealHint = revealHint;
 window.initEditor = initEditor;
 window.toggleSection = toggleSection;
 window.selectExample = selectExample;
+window.selectProjectStep = selectProjectStep;
