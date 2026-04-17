@@ -1,0 +1,4 @@
+# Build environment for Railway (Linux)
+# Provides gcc/python3 so better-sqlite3 can compile its native module from source.
+[phases.setup]
+nixPkgs = ["python3", "gcc", "gnumake"]

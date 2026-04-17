@@ -1,0 +1,15 @@
+# Dependencies — never commit these; Railway rebuilds them for Linux
+node_modules/
+
+# SQLite database — ephemeral on Railway free tier anyway
+data/
+
+# Environment secrets
+.env
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
