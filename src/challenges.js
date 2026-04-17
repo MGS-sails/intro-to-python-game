@@ -1,1212 +1,1931 @@
+/* ═══════════════════════════════════════════════════
+   PyLab — Challenges for "Python for Life Scientists (R Users)"
+   Frame: "you already know this in R — here's the Python equivalent"
+   ═══════════════════════════════════════════════════ */
+
 module.exports = [
-  // ═══════════════════════════════════════════════
-  // TIER 1 — NUCLEOTIDE  (100–150 XP)
-  // ═══════════════════════════════════════════════
+
+  // ══════════════════════════════════════════════════
+  // TIER 1 — NUCLEOTIDE (100-150 XP)
+  // Module 2: Python Fundamentals — R → Python basics
+  // ══════════════════════════════════════════════════
+
   {
     id: 1,
-    title: 'Hello, Lab!',
+    title: 'Hello from Python',
     tier: 'Nucleotide',
     tierLevel: 1,
     xp: 100,
-    icon: '🧪',
-    concepts: ['print()', 'strings'],
-    description: `Welcome to **PyLab**! Your first experiment is simple: print the message **"Hello, Lab!"** to the screen.
+    icon: '👋',
+    type: 'coding',
+    concepts: ['print()', 'strings', 'R comparison'],
+    description: `**From R to Python: your first output**
 
-In Python you use the \`print()\` function to display text. String values must be wrapped in quotes.
+In R you'd use:
+\`\`\`r
+cat("Hello from the lab!\\n")
+# or
+message("Hello from the lab!")
+\`\`\`
 
-\`\`\`python
-print("some text")
-\`\`\``,
-    starterCode: `# Your first experiment begins!
-# Use print() to display: Hello, Lab!
+In Python, \`print()\` is the universal output function. It adds a newline automatically — no \`\\n\` needed.
+
+**Your task:** Print exactly:
+\`Hello from the lab!\`
+
+**Key difference:** \`print()\` in Python auto-adds a newline and converts non-strings for you — unlike R's \`cat()\` which needs explicit \`\\n\`.`,
+    starterCode: `# In R: cat("Hello from the lab!\\n")
+# In Python:
+print("Hello from the lab!")
 `,
     hints: [
-      'Use the `print()` function.',
-      'print("Hello, Lab!")',
+      'Use print() with the string in quotes.',
+      'The message must match exactly: Hello from the lab!',
     ],
     tests: [
       {
-        description: 'Output is exactly "Hello, Lab!"',
-        testCode: `assert _stdout.strip() == "Hello, Lab!", f"Expected 'Hello, Lab!' but got: '{_stdout.strip()}'"`,
+        description: 'Prints "Hello from the lab!"',
+        testCode: `assert _stdout.strip() == "Hello from the lab!", f"Expected 'Hello from the lab!' but got: {repr(_stdout.strip())}"`,
       },
     ],
   },
 
   {
     id: 2,
-    title: 'DNA Storage',
+    title: '0-Indexed Genome',
     tier: 'Nucleotide',
     tierLevel: 1,
     xp: 100,
-    icon: '🧬',
-    concepts: ['variables', 'strings'],
-    description: `Every experiment needs data. Store the DNA sequence \`"ATCGATCGATCG"\` in a variable named \`dna_sequence\`, then **print** it.
+    icon: '🔢',
+    type: 'coding',
+    concepts: ['indexing', '0-based', 'slicing', 'R comparison'],
+    description: `**The #1 gotcha for R users: 0-based indexing**
 
-Variables are assigned with \`=\`:
+In R, sequences are 1-indexed:
+\`\`\`r
+seq <- "ATGCGT"
+substr(seq, 1, 1)   # "A" (first base)
+substr(seq, 1, 3)   # "ATG"
+\`\`\`
+
+In Python, everything starts at 0, and slices exclude the end:
 \`\`\`python
-variable_name = "value"
-\`\`\``,
-    starterCode: `# Store the DNA sequence in a variable
-dna_sequence =
+seq = "ATGCGT"
+seq[0]    # "A"  (first base — NOT seq[1]!)
+seq[0:3]  # "ATG"  (positions 0,1,2 — end is exclusive)
+seq[-1]   # last character
+\`\`\`
 
-# Print the sequence
-print(dna_sequence)`,
+**Your task:** Given \`sequence = "ATGCGTAAC"\`, store:
+- \`first_base\` = the first nucleotide
+- \`codon\` = the first 3 nucleotides (positions 0–2)
+- \`last_base\` = the last nucleotide (use negative indexing)`,
+    starterCode: `sequence = "ATGCGTAAC"
+
+# First base (index 0, not 1 like R!)
+first_base = sequence[0]
+
+# First codon: indices 0, 1, 2 (end is exclusive)
+codon = sequence[0:3]
+
+# Last base: negative indexing
+last_base = sequence[-1]
+
+print(first_base, codon, last_base)
+`,
     hints: [
-      'Assignment: `name = "value"`',
-      'dna_sequence = "ATCGATCGATCG"',
+      'Python slice [0:3] gives characters at positions 0, 1, 2 — the end is exclusive.',
+      'Negative index [-1] gives the last character — no need for len()-1.',
     ],
     tests: [
       {
-        description: 'Variable dna_sequence is defined',
-        testCode: `assert _ns.get('dna_sequence') is not None, "Variable 'dna_sequence' not found — did you assign it?"`,
+        description: 'first_base is "A"',
+        testCode: `assert _ns.get('first_base') == 'A', f"Expected 'A', got {repr(_ns.get('first_base'))}"`,
       },
       {
-        description: 'dna_sequence equals "ATCGATCGATCG"',
-        testCode: `assert _ns.get('dna_sequence') == "ATCGATCGATCG", f"Expected 'ATCGATCGATCG', got '{_ns.get('dna_sequence')}'"`,
+        description: 'codon is "ATG"',
+        testCode: `assert _ns.get('codon') == 'ATG', f"Expected 'ATG', got {repr(_ns.get('codon'))}"`,
       },
       {
-        description: 'The sequence is printed',
-        testCode: `assert "ATCGATCGATCG" in _stdout, "Make sure you call print(dna_sequence)"`,
+        description: 'last_base is "C"',
+        testCode: `assert _ns.get('last_base') == 'C', f"Expected 'C', got {repr(_ns.get('last_base'))}"`,
       },
     ],
   },
 
   {
     id: 3,
-    title: 'Sequence Length',
+    title: 'Type Detective',
     tier: 'Nucleotide',
     tierLevel: 1,
     xp: 100,
-    icon: '📏',
-    concepts: ['len()', 'variables'],
-    description: `How long is a DNA sequence? Use Python's built-in \`len()\` function to find out.
+    icon: '🔎',
+    type: 'coding',
+    concepts: ['type()', 'int', 'float', 'str', 'bool', 'R comparison'],
+    description: `**Python types vs R types**
 
-\`\`\`python
-len("ATCG")  # → 4
-\`\`\`
+| R | Python |
+|---|--------|
+| \`numeric\` (double) | \`float\` |
+| \`integer\` (1L) | \`int\` |
+| \`character\` | \`str\` |
+| \`logical\` | \`bool\` |
+| \`NA\` | \`None\` |
 
-Given \`sequence = "GCTAGCTAGCTA"\`, store its length in \`seq_length\` and print it.`,
-    starterCode: `sequence = "GCTAGCTAGCTA"
+In R: \`class(x)\` or \`typeof(x)\`
+In Python: \`type(x).__name__\` gives the type as a string.
 
-# Get the length of the sequence
-seq_length =
+**Your task:** Given the lab measurements below, store:
+- \`gene_count_type\` = type name of \`gene_count\` as a string (e.g. \`"int"\`)
+- \`expression_type\` = type name of \`expression_level\`
+- \`is_significant\` = \`True\` if \`p_value < 0.05\` else \`False\``,
+    starterCode: `gene_count = 847
+expression_level = 3.14
+p_value = 0.032
+gene_name = "BRCA1"
 
-print(seq_length)`,
+# Get type names as strings
+gene_count_type = type(gene_count).__name__   # "int"
+expression_type = type(expression_level).__name__
+
+# Boolean comparison (like R's logical, but True/False not TRUE/FALSE)
+is_significant = p_value < 0.05
+
+print(gene_count_type, expression_type, is_significant)
+`,
     hints: [
-      '`len()` returns the number of characters in a string.',
-      'seq_length = len(sequence)',
+      'type(x).__name__ gives the string name like "int", "float", "str".',
+      'Python booleans are True/False (capitalised, no quotes).',
     ],
     tests: [
       {
-        description: 'seq_length is defined',
-        testCode: `assert _ns.get('seq_length') is not None, "Variable 'seq_length' not found"`,
+        description: 'gene_count_type is "int"',
+        testCode: `assert _ns.get('gene_count_type') == 'int', f"Got {repr(_ns.get('gene_count_type'))}"`,
       },
       {
-        description: 'seq_length equals 12',
-        testCode: `assert _ns.get('seq_length') == 12, f"Expected 12, got {_ns.get('seq_length')}"`,
+        description: 'expression_type is "float"',
+        testCode: `assert _ns.get('expression_type') == 'float', f"Got {repr(_ns.get('expression_type'))}"`,
       },
       {
-        description: '12 is printed',
-        testCode: `assert "12" in _stdout, "Make sure you print(seq_length)"`,
+        description: 'is_significant is True (p < 0.05)',
+        testCode: `assert _ns.get('is_significant') == True, "p_value=0.032 should be significant"`,
       },
     ],
   },
 
   {
     id: 4,
-    title: 'GC Content',
+    title: 'The None Trap',
     tier: 'Nucleotide',
     tierLevel: 1,
-    xp: 150,
-    icon: '🔬',
-    concepts: ['.count()', 'arithmetic'],
-    description: `GC content — the percentage of G and C bases — is a key property of any DNA sequence.
+    xp: 120,
+    icon: '🚫',
+    type: 'coding',
+    concepts: ['None', 'NA', 'is None', 'R comparison'],
+    description: `**\`None\` vs \`NA\` — a critical difference**
 
-Use the \`.count()\` string method to count occurrences of a character:
-\`\`\`python
-"ATCG".count("A")  # → 1
+In R, \`NA\` propagates silently:
+\`\`\`r
+x <- NA
+x + 1          # NA  (propagates)
+is.na(x)       # TRUE
 \`\`\`
 
-For \`sequence = "ATCGCGATCG"\`, calculate the **total** number of G's and C's. Store it in \`gc_count\` and print it.`,
-    starterCode: `sequence = "ATCGCGATCG"
+In Python, \`None\` does NOT propagate — arithmetic on \`None\` raises \`TypeError\`. Always check first.
 
-# Count G's and C's
-gc_count = sequence.count("G") +
+**Critical:** Always use \`is None\` not \`== None\`:
+\`\`\`python
+x = None
+x is None      # True  ✓ correct
+x == None      # works but is bad practice
+\`\`\`
 
-print(gc_count)`,
+**Your task:** Write \`safe_log2fc(treatment, control)\` that:
+- Returns \`math.log2(treatment / control)\` if neither is \`None\` and \`control != 0\`
+- Returns \`None\` otherwise`,
+    starterCode: `import math
+
+def safe_log2fc(treatment, control):
+    if treatment is None or control is None:
+        return None
+    if control == 0:
+        return None
+    return math.log2(treatment / control)
+
+print(safe_log2fc(8.0, 2.0))   # 2.0
+print(safe_log2fc(None, 2.0))  # None
+print(safe_log2fc(4.0, 0))     # None
+`,
     hints: [
-      'Use .count() twice — once for "G" and once for "C".',
-      'gc_count = sequence.count("G") + sequence.count("C")',
+      'Use "is None" not "== None" — PEP 8 style and safer.',
+      'Check for None BEFORE arithmetic to avoid TypeError.',
     ],
     tests: [
       {
-        description: 'gc_count is defined',
-        testCode: `assert _ns.get('gc_count') is not None, "Variable 'gc_count' not found"`,
+        description: 'safe_log2fc(8.0, 2.0) returns 2.0',
+        testCode: `import math; f = _ns['safe_log2fc']; r = f(8.0, 2.0); assert abs(r - 2.0) < 1e-9, f"Expected 2.0, got {r}"`,
       },
       {
-        description: 'gc_count equals 6',
-        testCode: `assert _ns.get('gc_count') == 6, f"Expected 6 (4 G's + 2 C's in ATCGCGATCG), got {_ns.get('gc_count')}"`,
+        description: 'safe_log2fc(None, 2.0) returns None',
+        testCode: `f = _ns['safe_log2fc']; assert f(None, 2.0) is None`,
       },
       {
-        description: '6 is printed',
-        testCode: `assert "6" in _stdout, "Make sure you print(gc_count)"`,
+        description: 'safe_log2fc(4.0, 0) returns None',
+        testCode: `f = _ns['safe_log2fc']; assert f(4.0, 0) is None`,
       },
     ],
   },
 
   {
     id: 5,
-    title: 'RNA Transcription',
+    title: 'String Surgery',
     tier: 'Nucleotide',
     tierLevel: 1,
     xp: 150,
-    icon: '🔁',
-    concepts: ['.replace()', 'strings'],
-    description: `During transcription, DNA is converted to RNA by replacing every **T** with **U**.
+    icon: '✂️',
+    type: 'coding',
+    concepts: ['.upper()', '.replace()', '.strip()', '.split()', 'R comparison'],
+    description: `**String methods: Python vs R**
 
-Use the \`.replace()\` string method:
-\`\`\`python
-"ATG".replace("T", "U")  # → "AUG"
-\`\`\`
+| Task | R | Python |
+|------|---|--------|
+| Uppercase | \`toupper(s)\` | \`s.upper()\` |
+| Replace | \`gsub("T","U",s)\` | \`s.replace("T","U")\` |
+| Trim whitespace | \`trimws(s)\` | \`s.strip()\` |
+| Split | \`strsplit(s,",")\` | \`s.split(",")\` |
 
-Transcribe \`dna = "ATCGATCGTTAA"\` into RNA. Store it in \`rna_sequence\` and print it.`,
-    starterCode: `dna = "ATCGATCGTTAA"
+Python strings are **objects** — methods are called ON the string with dot notation.
 
-# Replace every T with U to get RNA
-rna_sequence =
+**Your task:** Process this annotation line:
+\`"  brca1 | Breast cancer 1 | chr17:43044295-43125483  "\`
 
-print(rna_sequence)`,
+Produce:
+- \`gene_id\` = uppercased first field, stripped: \`"BRCA1"\`
+- \`chrom\` = third field: \`"chr17:43044295-43125483"\`
+- \`fields\` = list of all 3 stripped fields`,
+    starterCode: `raw = "  brca1 | Breast cancer 1 | chr17:43044295-43125483  "
+
+# Strip outer whitespace, then split on "|"
+fields = [f.strip() for f in raw.strip().split("|")]
+
+gene_id = fields[0].upper()
+chrom = fields[2]
+
+print(gene_id)
+print(chrom)
+print(fields)
+`,
     hints: [
-      '`string.replace("old", "new")` replaces all occurrences.',
-      'rna_sequence = dna.replace("T", "U")',
+      's.strip() removes leading/trailing whitespace — like R\'s trimws().',
+      'Chain methods: s.strip().upper() works left to right.',
     ],
     tests: [
       {
-        description: 'rna_sequence is defined',
-        testCode: `assert _ns.get('rna_sequence') is not None, "Variable 'rna_sequence' not found"`,
+        description: 'gene_id is "BRCA1"',
+        testCode: `assert _ns.get('gene_id') == 'BRCA1', f"Got {repr(_ns.get('gene_id'))}"`,
       },
       {
-        description: 'rna_sequence is correct',
-        testCode: `assert _ns.get('rna_sequence') == "AUCGAUCGUUAA", f"Expected 'AUCGAUCGUUAA', got '{_ns.get('rna_sequence')}'"`,
+        description: 'chrom is "chr17:43044295-43125483"',
+        testCode: `assert _ns.get('chrom') == 'chr17:43044295-43125483', f"Got {repr(_ns.get('chrom'))}"`,
       },
       {
-        description: 'RNA sequence is printed',
-        testCode: `assert "AUCGAUCGUUAA" in _stdout, "Make sure you print(rna_sequence)"`,
+        description: 'fields has 3 stripped elements',
+        testCode: `f = _ns.get('fields'); assert len(f) == 3 and all(s == s.strip() for s in f), f"Got {f}"`,
       },
     ],
   },
 
-  // ═══════════════════════════════════════════════
-  // TIER 2 — AMINO ACID  (200–250 XP)
-  // ═══════════════════════════════════════════════
+  // ══════════════════════════════════════════════════
+  // TIER 2 — AMINO ACID (200-250 XP)
+  // Module 3: Data Structures
+  // ══════════════════════════════════════════════════
+
   {
     id: 6,
-    title: 'Slicing the Genome',
+    title: 'Gene Expression List',
     tier: 'Amino Acid',
     tierLevel: 2,
     xp: 200,
-    icon: '✂️',
-    concepts: ['string slicing', 'indexing'],
-    description: `Extract specific regions from a genome using Python **slicing**: \`sequence[start:end]\` (0-indexed, end is exclusive).
+    icon: '📋',
+    type: 'coding',
+    concepts: ['lists', 'list comprehension', 'sorted()', 'R comparison'],
+    description: `**Python lists vs R vectors — the biggest mental shift**
 
-\`\`\`python
-"ATCGATCG"[0:3]  # → "ATC"
-"ATCGATCG"[:3]   # → "ATC"   (start defaults to 0)
-"ATCGATCG"[3:]   # → "GATCG" (end defaults to len)
+In R, vectors are the fundamental unit and are vectorised:
+\`\`\`r
+expr <- c(2.1, 5.4, 0.3, 8.9, 1.2)
+expr[expr > 2]           # vectorised filter — no loop needed
+length(expr)             # 5
 \`\`\`
 
-From \`genome = "TATAATGCGATCGTTAA"\`:
-- Store the **first 6 characters** in \`promoter\`
-- Store characters **6 to 12** in \`coding_region\`
-- Print both`,
-    starterCode: `genome = "TATAATGCGATCGTTAA"
+Python lists are **not** vectorised — \`expr > 2\` doesn't work on a plain list. Use list comprehensions:
+\`\`\`python
+expr = [2.1, 5.4, 0.3, 8.9, 1.2]
+[x for x in expr if x > 2]   # filter — like R's expr[expr > 2]
+len(expr)                     # 5
+\`\`\`
 
-# First 6 characters — the promoter region
-promoter =
+**Your task:** Given expression data:
+- \`high_expr\` = list of values > 3.0
+- \`n_genes\` = total number of genes
+- \`top_two\` = top 2 values (sorted descending)`,
+    starterCode: `expression = [2.1, 5.4, 0.3, 8.9, 1.2, 6.7, 0.8, 4.3]
 
-# Characters 6 to 12 — the coding region
-coding_region =
+# Filter — list comprehension replaces R's vectorised boolean indexing
+high_expr = [x for x in expression if x > 3.0]
 
-print(f"Promoter: {promoter}")
-print(f"Coding region: {coding_region}")`,
+# Length
+n_genes = len(expression)
+
+# Sort descending, slice top 2
+top_two = sorted(expression, reverse=True)[:2]
+
+print(high_expr)
+print(n_genes)
+print(top_two)
+`,
     hints: [
-      'Slicing: `genome[:6]` gives the first 6 characters.',
-      'promoter = genome[:6]',
-      'coding_region = genome[6:12]',
+      '[x for x in lst if condition] is the Pythonic filter.',
+      'sorted(lst, reverse=True)[:2] gives top 2.',
     ],
     tests: [
       {
-        description: 'promoter equals "TATAAT"',
-        testCode: `assert _ns.get('promoter') == "TATAAT", f"Expected 'TATAAT', got '{_ns.get('promoter')}'"`,
+        description: 'high_expr contains values > 3.0',
+        testCode: `h = _ns.get('high_expr'); assert sorted(h) == sorted([5.4, 8.9, 6.7, 4.3]), f"Got {h}"`,
       },
       {
-        description: 'coding_region equals "GCGATC"',
-        testCode: `assert _ns.get('coding_region') == "GCGATC", f"Expected 'GCGATC', got '{_ns.get('coding_region')}'"`,
+        description: 'n_genes is 8',
+        testCode: `assert _ns.get('n_genes') == 8`,
       },
       {
-        description: 'Both regions are printed',
-        testCode: `assert "TATAAT" in _stdout and "GCGATC" in _stdout, "Make sure you print both regions"`,
+        description: 'top_two is [8.9, 6.7]',
+        testCode: `assert _ns.get('top_two') == [8.9, 6.7], f"Got {_ns.get('top_two')}"`,
       },
     ],
   },
 
   {
     id: 7,
-    title: 'Protein Inventory',
+    title: 'Codon Dictionary',
     tier: 'Amino Acid',
     tierLevel: 2,
     xp: 200,
-    icon: '🧫',
-    concepts: ['lists', 'indexing', 'len()'],
-    description: `A Python **list** stores multiple items in order: \`["item1", "item2", "item3"]\`
+    icon: '📖',
+    type: 'coding',
+    concepts: ['dict', '.get()', '.items()', 'R named list comparison'],
+    description: `**Python dicts vs R named lists**
 
-Create a list named \`proteins\` containing: \`"Hemoglobin"\`, \`"Insulin"\`, \`"Collagen"\`, \`"Actin"\`.
+\`\`\`r
+# R named list
+codon_table[["ATG"]]   # "Met"
+codon_table[["XYZ"]]   # NULL (no error — silent)
+\`\`\`
 
-Then:
-1. Print the **first** protein (index \`0\`)
-2. Print the **last** protein (index \`-1\`)
-3. Print the total **count** using \`len()\``,
-    starterCode: `# Create a list of proteins found in a cell sample
-proteins = ["Hemoglobin", "Insulin",
+\`\`\`python
+# Python dict
+codon_table["ATG"]          # "Met"
+codon_table["XYZ"]          # KeyError! (not silent like R)
+codon_table.get("XYZ")      # None — safe equivalent of R's NULL
+codon_table.get("XYZ", "?") # "?" default value
+\`\`\`
 
-# Print the first protein
-print(proteins[0])
+**Your task:**
+- \`lookup(codon)\` returns the amino acid or \`"Unknown"\`
+- \`start_codons\` = list of codons encoding \`"Met"\`
+- \`n_stop_codons\` = count of stop codons`,
+    starterCode: `codon_table = {
+    "ATG": "Met",   "TTT": "Phe",  "TTC": "Phe",
+    "TAA": "Stop",  "TAG": "Stop", "TGA": "Stop",
+    "GCT": "Ala",   "TGG": "Trp",  "CGT": "Arg",
+}
 
-# Print the last protein
-print(proteins[-1])
+def lookup(codon):
+    return codon_table.get(codon, "Unknown")
 
-# Print the total number of proteins
-print(len(proteins))`,
+start_codons = [codon for codon, aa in codon_table.items() if aa == "Met"]
+n_stop_codons = sum(1 for aa in codon_table.values() if aa == "Stop")
+
+print(lookup("ATG"))
+print(lookup("XYZ"))
+print(start_codons)
+print(n_stop_codons)
+`,
     hints: [
-      'List: `["item1", "item2", ...]`',
-      'proteins = ["Hemoglobin", "Insulin", "Collagen", "Actin"]',
-      '`proteins[-1]` gives the last element.',
+      'dict.get(key, default) is the safe alternative to direct access.',
+      'dict.items() gives (key, value) pairs for filtering.',
     ],
     tests: [
       {
-        description: 'proteins list has exactly 4 items',
-        testCode: `p = _ns.get('proteins', []); assert len(p) == 4, f"Expected 4 proteins, got {len(p)}"`,
+        description: 'lookup("ATG") returns "Met"',
+        testCode: `assert _ns['lookup']("ATG") == "Met"`,
       },
       {
-        description: 'proteins contains all four proteins',
-        testCode: `p = _ns.get('proteins', []); assert set(p) == {"Hemoglobin","Insulin","Collagen","Actin"}, f"Missing proteins: {set(p)}"`,
+        description: 'lookup("XYZ") returns "Unknown"',
+        testCode: `assert _ns['lookup']("XYZ") == "Unknown"`,
       },
       {
-        description: '"Hemoglobin" and "Actin" are printed',
-        testCode: `assert "Hemoglobin" in _stdout and "Actin" in _stdout, "Expected Hemoglobin and Actin in output"`,
+        description: 'start_codons is ["ATG"]',
+        testCode: `assert _ns.get('start_codons') == ['ATG'], f"Got {_ns.get('start_codons')}"`,
       },
       {
-        description: 'Count 4 is printed',
-        testCode: `assert "4" in _stdout, "Expected the count '4' in output"`,
+        description: 'n_stop_codons is 3',
+        testCode: `assert _ns.get('n_stop_codons') == 3`,
       },
     ],
   },
 
   {
     id: 8,
-    title: 'Temperature Converter',
+    title: 'Unique Genes with Sets',
     tier: 'Amino Acid',
     tierLevel: 2,
     xp: 200,
-    icon: '🌡️',
-    concepts: ['arithmetic', 'variables', 'round()'],
-    description: `Your incubator shows **Fahrenheit** but your protocol requires **Celsius**.
+    icon: '🔵',
+    type: 'coding',
+    concepts: ['sets', '&', '|', '-', 'R comparison'],
+    description: `**Python sets vs R's set operations**
 
-Formula: \`celsius = (fahrenheit - 32) × 5 / 9\`
+\`\`\`r
+intersect(a, b)   # common elements
+union(a, b)       # all elements
+setdiff(a, b)     # in a but not b
+\`\`\`
 
-Convert \`98.6 °F\` (body temperature — important for enzyme assays). Store the result in \`celsius\` and print it **rounded to 1 decimal place** using \`round(value, 1)\`.`,
-    starterCode: `fahrenheit = 98.6
+\`\`\`python
+a & b   # intersection
+a | b   # union
+a - b   # difference
+a ^ b   # symmetric difference
+\`\`\`
 
-# Convert to Celsius
-celsius =
+**Your task:** Two RNA-seq experiments, find:
+- \`shared_genes\` = expressed in BOTH
+- \`experiment1_only\` = only in experiment 1
+- \`all_genes\` = all unique genes
+- \`n_unique\` = total count`,
+    starterCode: `experiment1 = {"TP53", "BRCA1", "MYC", "EGFR", "PTEN"}
+experiment2 = {"BRCA1", "MYC", "KRAS", "PTEN", "RB1"}
 
-# Print rounded to 1 decimal place
-print(round(celsius, 1))`,
+shared_genes = experiment1 & experiment2
+experiment1_only = experiment1 - experiment2
+all_genes = experiment1 | experiment2
+n_unique = len(all_genes)
+
+print("Shared:", sorted(shared_genes))
+print("Exp1 only:", sorted(experiment1_only))
+print("Total unique:", n_unique)
+`,
     hints: [
-      'celsius = (fahrenheit - 32) * 5 / 9',
-      '`round(number, decimal_places)` rounds to n decimals.',
+      '& for intersection, | for union, - for difference.',
+      'sorted(a_set) converts to a sorted list for display.',
     ],
     tests: [
       {
-        description: 'celsius ≈ 37.0',
-        testCode: `c = _ns.get('celsius'); assert c is not None and abs(c - 37.0) < 0.01, f"Expected ~37.0, got {c}"`,
+        description: 'shared_genes = {"BRCA1", "MYC", "PTEN"}',
+        testCode: `assert _ns.get('shared_genes') == {"BRCA1","MYC","PTEN"}, f"Got {_ns.get('shared_genes')}"`,
       },
       {
-        description: '"37.0" is printed',
-        testCode: `assert "37.0" in _stdout, f"Expected '37.0' in output, got: {_stdout.strip()}"`,
+        description: 'experiment1_only = {"TP53", "EGFR"}',
+        testCode: `assert _ns.get('experiment1_only') == {"TP53","EGFR"}, f"Got {_ns.get('experiment1_only')}"`,
+      },
+      {
+        description: 'n_unique is 7 (5+5 with 3 shared)',
+        testCode: `assert _ns.get('n_unique') == 7, f"Got {_ns.get('n_unique')}"`,
       },
     ],
   },
 
   {
     id: 9,
-    title: 'Cell Counter',
+    title: 'Genomic Coordinates (Tuples)',
     tier: 'Amino Acid',
     tierLevel: 2,
-    xp: 250,
-    icon: '🔢',
-    concepts: ['for loops', 'accumulator pattern'],
-    description: `You're counting cells across 5 microscopy fields. Use a **for loop** to sum the counts.
+    xp: 200,
+    icon: '📌',
+    type: 'coding',
+    concepts: ['tuples', 'unpacking', 'immutable', 'max with key'],
+    description: `**Tuples — R has no real equivalent**
+
+Tuples are immutable lists. Use them for fixed records like genomic coordinates. Unpacking is a key Python pattern:
 
 \`\`\`python
-for item in my_list:
-    # item takes each value in turn
+coord = ("chr17", 43044295, 43125483)
+chrom, start, end = coord   # unpacking — cleaner than coord[0], coord[1]...
 \`\`\`
 
-Accumulate the total in \`total_cells\` starting at \`0\`, then print it.`,
-    starterCode: `cell_counts = [23, 45, 12, 67, 34]
-total_cells = 0
+**Your task:** Write \`gene_length(coords)\` that returns the gene length (end - start), then:
+- \`lengths\` = list of lengths for all genes
+- \`longest_gene\` = name of the gene with the maximum length`,
+    starterCode: `genes = {
+    "BRCA1": ("chr17", 43044295, 43125483),
+    "TP53":  ("chr17", 7668402,  7687550),
+    "EGFR":  ("chr7",  55086725, 55324313),
+    "MYC":   ("chr8",  127735434,127742951),
+}
 
-# Sum all counts using a for loop
-for count in cell_counts:
+def gene_length(coords):
+    chrom, start, end = coords   # tuple unpacking
+    return end - start
 
+lengths = [gene_length(coords) for coords in genes.values()]
+longest_gene = max(genes.keys(), key=lambda name: gene_length(genes[name]))
 
-print(f"Total cells: {total_cells}")`,
+print(lengths)
+print(longest_gene)
+`,
     hints: [
-      'Inside the loop, add `count` to `total_cells`.',
-      '`total_cells += count`  (same as `total_cells = total_cells + count`)',
+      'Unpack with: chrom, start, end = coords',
+      'max(iterable, key=func) finds the element where func(element) is largest.',
     ],
     tests: [
       {
-        description: 'total_cells equals 181',
-        testCode: `assert _ns.get('total_cells') == 181, f"Expected 181, got {_ns.get('total_cells')}"`,
+        description: 'gene_length on BRCA1 coords is 81188',
+        testCode: `f = _ns['gene_length']; assert f(("chr17", 43044295, 43125483)) == 81188`,
       },
       {
-        description: '"Total cells: 181" is printed',
-        testCode: `assert "181" in _stdout, f"Expected '181' in output"`,
+        description: 'lengths has 4 positive values',
+        testCode: `L = _ns.get('lengths'); assert len(L) == 4 and all(x > 0 for x in L)`,
+      },
+      {
+        description: 'longest_gene is "EGFR"',
+        testCode: `assert _ns.get('longest_gene') == 'EGFR', f"Got {repr(_ns.get('longest_gene'))}"`,
       },
     ],
   },
 
   {
     id: 10,
-    title: 'Mutation Alert',
+    title: 'Variant Classifier',
     tier: 'Amino Acid',
     tierLevel: 2,
     xp: 250,
-    icon: '⚠️',
-    concepts: ['if/else', 'in operator', 'conditionals'],
-    description: `Check whether a known mutation pattern exists in a DNA sequence.
+    icon: '🧬',
+    type: 'coding',
+    concepts: ['if/elif/else', 'in operator', 'f-strings', 'R comparison'],
+    description: `**if/elif/else — almost identical to R, watch the syntax**
 
-Use the \`in\` keyword inside an **if/else** statement:
-\`\`\`python
-if "pattern" in sequence:
-    print("Found!")
-else:
-    print("Not found")
+\`\`\`r
+if (variant %in% oncogenes) {
+  category <- "oncogene"
+} else if (variant %in% tumour_suppressors) {
+  category <- "tumour suppressor"
+} else { category <- "unknown" }
 \`\`\`
 
-If \`mutation\` is in \`sequence\`, print \`"Mutation detected!"\`, otherwise print \`"Sequence is normal"\`.`,
-    starterCode: `sequence = "ATCGTTTAAACGATCG"
-mutation = "TTTAAA"
-
-# Check if the mutation is present
-if mutation in sequence:
-
+\`\`\`python
+# No parens needed; colon is mandatory; indentation = braces
+if variant in oncogenes:
+    category = "oncogene"
+elif variant in tumour_suppressors:
+    category = "tumour suppressor"
 else:
-    `,
+    category = "unknown"
+\`\`\`
+
+**Your task:** Write \`classify_variant(gene)\` and apply it to produce a \`classifications\` dict.`,
+    starterCode: `oncogenes = {"KRAS", "MYC", "EGFR", "BRAF", "PIK3CA"}
+tumour_suppressors = {"TP53", "BRCA1", "BRCA2", "PTEN", "RB1"}
+
+def classify_variant(gene):
+    if gene in oncogenes:
+        return "oncogene"
+    elif gene in tumour_suppressors:
+        return "tumour suppressor"
+    else:
+        return "unknown"
+
+query_genes = ["TP53", "KRAS", "NOTCH1", "BRCA1", "IDH1"]
+classifications = {gene: classify_variant(gene) for gene in query_genes}
+
+for gene, cat in classifications.items():
+    print(f"{gene}: {cat}")
+`,
     hints: [
-      '`if mutation in sequence:` checks if the pattern exists.',
-      'print("Mutation detected!") in the if block.',
-      'print("Sequence is normal") in the else block.',
+      '"in" checks membership — works on sets (fast!), lists, and dict keys.',
+      'Dict comprehension: {k: f(k) for k in keys}',
     ],
     tests: [
       {
-        description: '"Mutation detected!" is printed',
-        testCode: `assert "Mutation detected!" in _stdout, f"Expected 'Mutation detected!' but got: '{_stdout.strip()}'"`,
+        description: 'classify_variant("TP53") returns "tumour suppressor"',
+        testCode: `assert _ns['classify_variant']('TP53') == 'tumour suppressor'`,
+      },
+      {
+        description: 'classify_variant("KRAS") returns "oncogene"',
+        testCode: `assert _ns['classify_variant']('KRAS') == 'oncogene'`,
+      },
+      {
+        description: 'classify_variant("NOTCH1") returns "unknown"',
+        testCode: `assert _ns['classify_variant']('NOTCH1') == 'unknown'`,
+      },
+      {
+        description: 'classifications dict has 5 entries',
+        testCode: `assert len(_ns.get('classifications', {})) == 5`,
       },
     ],
   },
 
-  // ═══════════════════════════════════════════════
-  // TIER 3 — ORGANELLE  (350–400 XP)
-  // ═══════════════════════════════════════════════
+  // ══════════════════════════════════════════════════
+  // TIER 3 — ORGANELLE (350-400 XP)
+  // Module 4: Control Flow & Functions
+  // ══════════════════════════════════════════════════
+
   {
     id: 11,
-    title: 'Codon Dictionary',
+    title: 'For Loops & enumerate()',
     tier: 'Organelle',
     tierLevel: 3,
     xp: 350,
-    icon: '📖',
-    concepts: ['dictionaries', 'key-value pairs'],
-    description: `The genetic code maps codons to amino acids — a perfect use case for a Python **dictionary**.
+    icon: '🔁',
+    type: 'coding',
+    concepts: ['for loops', 'enumerate()', 'range()', 'R comparison'],
+    description: `**Loops: R vs Python**
 
-\`\`\`python
-d = {"key": "value", "key2": "value2"}
-d["key"]  # → "value"
+\`\`\`r
+for (i in seq_along(genes)) {
+  cat(i, genes[i], "\\n")   # 1-indexed
+}
 \`\`\`
 
-Create \`codon_table\` with these mappings:
-| Codon | Amino Acid |
-|-------|-----------|
-| \`"AUG"\` | \`"Methionine"\` |
-| \`"UUU"\` | \`"Phenylalanine"\` |
-| \`"UAA"\` | \`"STOP"\` |
+\`\`\`python
+for i, gene in enumerate(genes):   # 0-indexed by default
+    print(i, gene)
 
-Then look up \`"AUG"\`, store in \`amino_acid\`, and print it.`,
-    starterCode: `# Build the codon lookup table
-codon_table = {
-    "AUG": "Methionine",
+for i, gene in enumerate(genes, start=1):  # start=1 → like R!
+    print(i, gene)
+\`\`\`
 
+**Your task:** Given expression values:
+- \`high_expression_samples\` = list of (index, value) tuples where value > 5.0 (0-indexed)
+- \`cumulative_sum\` = running total list`,
+    starterCode: `samples = [1.2, 6.8, 3.4, 9.1, 0.5, 7.3, 2.2, 5.8]
 
-}
+# enumerate gives (0-based index, value)
+high_expression_samples = [(i, val) for i, val in enumerate(samples) if val > 5.0]
 
-# Look up the amino acid for AUG
-amino_acid = codon_table["AUG"]
+# Cumulative sum
+cumulative_sum = []
+total = 0
+for val in samples:
+    total += val
+    cumulative_sum.append(round(total, 2))
 
-print(amino_acid)`,
+print("High:", high_expression_samples)
+print("Cumulative:", cumulative_sum)
+
+# Print 1-based (like R) using start=1
+for i, val in enumerate(samples, start=1):
+    print(f"Sample {i}: {val}")
+`,
     hints: [
-      'Dict syntax: `{"key": "value", "key2": "value2"}`',
-      'Add: `"UUU": "Phenylalanine"` and `"UAA": "STOP"`',
-      '`codon_table["AUG"]` retrieves the value for key "AUG".',
+      'enumerate(lst, start=1) makes the counter 1-based — handy for R-like output.',
+      'Keep a running total and append to build cumulative sums.',
     ],
     tests: [
       {
-        description: 'codon_table has 3 entries',
-        testCode: `ct = _ns.get('codon_table', {}); assert len(ct) == 3, f"Expected 3 entries in codon_table, got {len(ct)}"`,
+        description: 'high_expression_samples: indices 1,3,5,7 (values 6.8,9.1,7.3,5.8)',
+        testCode: `h = _ns.get('high_expression_samples'); assert h == [(1,6.8),(3,9.1),(5,7.3),(7,5.8)], f"Got {h}"`,
       },
       {
-        description: 'Codon mappings are correct',
-        testCode: `ct = _ns.get('codon_table', {}); assert ct.get("AUG") == "Methionine" and ct.get("UUU") == "Phenylalanine" and ct.get("UAA") == "STOP", "Missing or incorrect codon mappings"`,
-      },
-      {
-        description: 'amino_acid is "Methionine"',
-        testCode: `assert _ns.get('amino_acid') == "Methionine", f"Expected 'Methionine', got '{_ns.get('amino_acid')}'"`,
-      },
-      {
-        description: '"Methionine" is printed',
-        testCode: `assert "Methionine" in _stdout, "Expected 'Methionine' in output"`,
+        description: 'cumulative_sum has 8 elements, last is total',
+        testCode: `cs = _ns.get('cumulative_sum'); assert len(cs) == 8 and abs(cs[-1] - round(sum([1.2,6.8,3.4,9.1,0.5,7.3,2.2,5.8]),2)) < 0.01`,
       },
     ],
   },
 
   {
     id: 12,
-    title: 'Expression Filter',
+    title: 'List Comprehensions',
     tier: 'Organelle',
     tierLevel: 3,
     xp: 350,
-    icon: '📊',
-    concepts: ['loops', 'conditionals', 'list.append()'],
-    description: `You have RNA-seq data. Only genes with expression **> 5.0** are considered significant.
+    icon: '⚡',
+    type: 'coding',
+    concepts: ['list comprehension', 'sapply equivalent', 'filtering', 'R comparison'],
+    description: `**List comprehensions — Python's answer to sapply/lapply**
 
-Iterate over \`expression_data\` (a dict) using \`.items()\` which yields \`(key, value)\` pairs:
-\`\`\`python
-for gene, level in expression_data.items():
-    ...
+\`\`\`r
+# R
+squared <- sapply(values, function(x) x^2)
+filtered <- Filter(function(x) x > 0, values)
 \`\`\`
 
-Collect significant gene names into \`expressed_genes\` list and print it.`,
-    starterCode: `expression_data = {
-    "BRCA1": 7.2, "TP53": 3.1, "EGFR": 8.9,
-    "MYC": 4.5, "KRAS": 6.7, "PTEN": 1.2
-}
+\`\`\`python
+# Python
+squared  = [x**2 for x in values]
+filtered = [x for x in values if x > 0]
+# Unpack tuples inline:
+names = [gene for gene, lfc, padj in results if lfc > 1]
+\`\`\`
 
-expressed_genes = []
+**Your task:** Given DESeq2-like results:
+- \`upreg\` = genes with log2fc > 1
+- \`downreg\` = genes with log2fc < -1
+- \`abs_fc\` = absolute fold-change values for ALL genes
+- \`sig_genes\` = genes where abs(log2fc) > 1 AND padj < 0.05`,
+    starterCode: `results = [
+    ("BRCA1", -2.3, 0.001),
+    ("MYC",    3.1, 0.0001),
+    ("TP53",  -0.4, 0.42),
+    ("EGFR",   1.8, 0.003),
+    ("PTEN",  -1.5, 0.02),
+    ("KRAS",   0.7, 0.15),
+    ("RB1",   -2.1, 0.008),
+]
 
-# Collect genes with expression level > 5.0
-for gene, level in expression_data.items():
-    if level > 5.0:
+upreg    = [gene for gene, lfc, padj in results if lfc > 1]
+downreg  = [gene for gene, lfc, padj in results if lfc < -1]
+abs_fc   = [abs(lfc) for gene, lfc, padj in results]
+sig_genes = [gene for gene, lfc, padj in results if abs(lfc) > 1 and padj < 0.05]
 
-
-print(expressed_genes)`,
+print("Up:", upreg)
+print("Down:", downreg)
+print("Significant:", sig_genes)
+`,
     hints: [
-      '`.items()` yields `(key, value)` pairs from a dict.',
-      '`expressed_genes.append(gene)` adds to the list.',
+      'Unpack tuples in the for clause: for gene, lfc, padj in results',
+      'Use "and" (not R\'s &) to combine conditions in a comprehension.',
     ],
     tests: [
       {
-        description: 'expressed_genes is a list',
-        testCode: `assert isinstance(_ns.get('expressed_genes'), list), "expressed_genes should be a list"`,
+        description: 'upreg = ["MYC", "EGFR"]',
+        testCode: `assert _ns.get('upreg') == ['MYC','EGFR'], f"Got {_ns.get('upreg')}"`,
       },
       {
-        description: 'expressed_genes contains BRCA1, EGFR, KRAS',
-        testCode: `eg = set(_ns.get('expressed_genes', [])); assert eg == {"BRCA1","EGFR","KRAS"}, f"Expected {{BRCA1, EGFR, KRAS}}, got {eg}"`,
+        description: 'downreg = ["BRCA1", "PTEN", "RB1"]',
+        testCode: `assert _ns.get('downreg') == ['BRCA1','PTEN','RB1'], f"Got {_ns.get('downreg')}"`,
       },
       {
-        description: 'List is printed',
-        testCode: `assert "BRCA1" in _stdout and "EGFR" in _stdout and "KRAS" in _stdout, "Print the expressed_genes list"`,
+        description: 'sig_genes = ["BRCA1", "MYC", "EGFR", "PTEN", "RB1"]',
+        testCode: `assert _ns.get('sig_genes') == ['BRCA1','MYC','EGFR','PTEN','RB1'], f"Got {_ns.get('sig_genes')}"`,
       },
     ],
   },
 
   {
     id: 13,
-    title: 'Reverse Complement',
+    title: 'Functions & Defaults',
     tier: 'Organelle',
     tierLevel: 3,
-    xp: 400,
-    icon: '🔃',
-    concepts: ['string reversal', '.replace()', 'method chaining'],
-    description: `The reverse complement is essential for PCR primer design.
+    xp: 350,
+    icon: '⚙️',
+    type: 'coding',
+    concepts: ['def', 'return', 'default arguments', 'R comparison'],
+    description: `**Defining functions: R vs Python**
 
-**Steps:**
-1. Reverse the sequence: \`seq[::-1]\`
-2. Replace each base A↔T, G↔C
-
-**Trick:** use a temporary character to avoid double-replacing:
-\`\`\`python
-"ATCG"
- .replace("A", "x").replace("T", "A").replace("x", "T")
- .replace("G", "y").replace("C", "G").replace("y", "C")
+\`\`\`r
+calc_stats <- function(values, ddof = 1) {
+  list(mean=mean(values), sd=sd(values), n=length(values))
+}
 \`\`\`
 
-Compute the reverse complement of \`dna = "ATCGATCG"\`. Store it in \`reverse_complement\` and print it.`,
-    starterCode: `dna = "ATCGATCG"
+\`\`\`python
+def calc_stats(values, ddof=1):    # default arg same syntax
+    n    = len(values)
+    mean = sum(values) / n
+    var  = sum((x - mean)**2 for x in values) / (n - ddof)
+    return {"mean": mean, "sd": var**0.5, "n": n}
+\`\`\`
 
-# Step 1: reverse the sequence
-reversed_dna = dna[::-1]
+**Key difference:** Python requires an explicit \`return\` — without it, the function returns \`None\` (unlike R where the last expression is the return value).
 
-# Step 2: complement (use temp chars to avoid double-replacing)
-reverse_complement = (reversed_dna
-    .replace("A", "x").replace("T", "A").replace("x", "T")
-    # Add G↔C replacements here...
-)
+**Your task:** Write \`calc_stats(values, ddof=1)\` returning a dict with \`mean\`, \`std\`, \`min\`, \`max\`, \`n\`.`,
+    starterCode: `def calc_stats(values, ddof=1):
+    n    = len(values)
+    mean = sum(values) / n
+    var  = sum((x - mean) ** 2 for x in values) / (n - ddof)
+    std  = var ** 0.5
+    return {
+        "mean": round(mean, 4),
+        "std":  round(std, 4),
+        "min":  min(values),
+        "max":  max(values),
+        "n":    n,
+    }
 
-print(reverse_complement)`,
+expression = [4.2, 6.1, 3.8, 5.5, 7.2, 4.9]
+stats = calc_stats(expression)
+print(stats)
+`,
     hints: [
-      '`dna[::-1]` reverses a string.',
-      'Chain: `.replace("G", "y").replace("C", "G").replace("y", "C")`',
-      'Expected: "CGATCGAT"',
+      'sum((x - mean)**2 for x in values) uses a generator inside sum().',
+      'Python requires explicit return — last expression is NOT auto-returned.',
     ],
     tests: [
       {
-        description: 'reverse_complement equals "CGATCGAT"',
-        testCode: `rc = _ns.get('reverse_complement'); assert rc == "CGATCGAT", f"Expected 'CGATCGAT', got '{rc}'"`,
+        description: 'calc_stats returns dict with correct keys',
+        testCode: `r = _ns['calc_stats']([1.0,2.0,3.0]); assert set(r.keys()) >= {"mean","std","min","max","n"}`,
       },
       {
-        description: '"CGATCGAT" is printed',
-        testCode: `assert "CGATCGAT" in _stdout, "Make sure you print(reverse_complement)"`,
+        description: 'mean of [1,2,3] is 2.0',
+        testCode: `r = _ns['calc_stats']([1.0,2.0,3.0]); assert abs(r['mean'] - 2.0) < 0.01`,
+      },
+      {
+        description: 'ddof=1 std of [2,4,4,4,5,5,7,9] matches statistics.stdev',
+        testCode: `import statistics; expected = round(statistics.stdev([2.0,4.0,4.0,4.0,5.0,5.0,7.0,9.0]),4); r = _ns['calc_stats']([2.0,4.0,4.0,4.0,5.0,5.0,7.0,9.0]); assert abs(r['std'] - expected) < 0.01, f"Got {r['std']}, expected {expected}"`,
+      },
+      {
+        description: 'n is correctly counted',
+        testCode: `r = _ns['calc_stats']([4.2,6.1,3.8,5.5,7.2,4.9]); assert r['n'] == 6`,
       },
     ],
   },
 
   {
     id: 14,
-    title: 'Lab Statistics',
+    title: 'f-strings & Formatting',
     tier: 'Organelle',
     tierLevel: 3,
-    xp: 400,
-    icon: '📈',
-    concepts: ['sum()', 'min()', 'max()', 'round()'],
-    description: `Analyse absorbance readings from a spectrophotometer.
+    xp: 350,
+    icon: '📝',
+    type: 'coding',
+    concepts: ['f-strings', 'format specifiers', 'R paste/glue comparison'],
+    description: `**String formatting: R's paste/glue vs Python's f-strings**
 
-Python has built-in aggregate functions: \`sum()\`, \`min()\`, \`max()\`, \`len()\`.
+\`\`\`r
+sprintf("Gene: %s, FC: %.2f", gene, fc)
+glue::glue("Gene: {gene}, FC: {fc}")  # tidyverse
+\`\`\`
 
-Calculate:
-1. **mean** = \`sum(values) / len(values)\`
-2. **min** and **max**
+\`\`\`python
+f"Gene: {gene}, FC: {fc:.2f}"    # :.2f = 2 decimal places
+f"p = {pval:.2e}"                # scientific notation
+f"{gene:<8}"                     # left-align in 8 chars
+f"{value:,}"                     # 1,234,567
+\`\`\`
 
-Store in \`mean_abs\`, \`min_abs\`, \`max_abs\`. Print each rounded to **3 decimal places**.`,
-    starterCode: `absorbances = [0.423, 0.517, 0.389, 0.601, 0.445, 0.523, 0.412]
+**Your task:** Write \`format_deseq_row(gene, log2fc, padj, basemean)\` returning:
+\`"BRCA1    | log2FC: -2.30 | padj: 1.00e-03 | mean: 1,234.5"\`
+(gene left-padded to 8 chars, log2fc 2dp with sign, padj scientific, mean comma+1dp)`,
+    starterCode: `def format_deseq_row(gene, log2fc, padj, basemean):
+    return (
+        f"{gene:<8} | "
+        f"log2FC: {log2fc:+.2f} | "
+        f"padj: {padj:.2e} | "
+        f"mean: {basemean:,.1f}"
+    )
 
-# Calculate statistics
-mean_abs =
-min_abs =
-max_abs =
-
-print(f"Mean: {round(mean_abs, 3)}")
-print(f"Min:  {round(min_abs, 3)}")
-print(f"Max:  {round(max_abs, 3)}")`,
+print(format_deseq_row("BRCA1", -2.3, 0.001, 1234.5))
+print(format_deseq_row("MYC", 3.1, 0.00001, 45678.9))
+`,
     hints: [
-      'mean_abs = sum(absorbances) / len(absorbances)',
-      'Python has built-in `min()` and `max()` functions.',
+      '{gene:<8} left-aligns in a field of width 8.',
+      '{val:+.2f} always shows the sign (+/-). {val:.2e} = scientific notation.',
     ],
     tests: [
       {
-        description: 'mean_abs ≈ 0.473',
-        testCode: `m = _ns.get('mean_abs'); assert m is not None and abs(m - 0.47285714) < 0.001, f"Expected ~0.473, got {m}"`,
+        description: 'BRCA1 row contains correct formatted values',
+        testCode: `r = _ns['format_deseq_row']("BRCA1", -2.3, 0.001, 1234.5); assert "BRCA1" in r and "-2.30" in r and "1.00e-03" in r and "1,234.5" in r, f"Got: {r}"`,
       },
       {
-        description: 'min_abs equals 0.389',
-        testCode: `assert _ns.get('min_abs') == 0.389, f"Expected 0.389, got {_ns.get('min_abs')}"`,
-      },
-      {
-        description: 'max_abs equals 0.601',
-        testCode: `assert _ns.get('max_abs') == 0.601, f"Expected 0.601, got {_ns.get('max_abs')}"`,
+        description: 'Gene name padded to 8 characters (left-aligned)',
+        testCode: `r = _ns['format_deseq_row']("MYC", 3.1, 0.00001, 45678.9); assert r.startswith("MYC     "), f"Got: {repr(r[:12])}"`,
       },
     ],
   },
 
   {
     id: 15,
-    title: 'Reusable Assay',
+    title: 'Error Handling',
     tier: 'Organelle',
     tierLevel: 3,
     xp: 400,
-    icon: '⚗️',
-    concepts: ['def', 'parameters', 'return', 'default arguments'],
-    description: `Good science is **reproducible**. Write a function \`calculate_concentration\` that:
+    icon: '🛡️',
+    type: 'coding',
+    concepts: ['try/except', 'ValueError', 'TypeError', 'R tryCatch'],
+    description: `**Error handling: R's tryCatch vs Python's try/except**
 
-- Takes \`absorbance\` (float) and \`extinction_coefficient\` (float, **default 21.0**)
-- **Returns** \`absorbance / extinction_coefficient\`
+\`\`\`r
+result <- tryCatch({ log(x) }, error = function(e) NA)
+\`\`\`
 
-Then call it with \`absorbance = 0.84\` and print the result rounded to **4 decimal places**.`,
-    starterCode: `def calculate_concentration(absorbance, extinction_coefficient=21.0):
-    # Return absorbance divided by extinction_coefficient
+\`\`\`python
+try:
+    result = math.log(x)
+except ValueError:       # specific error
+    result = None
+except Exception as e:   # catch-all
+    print(f"Unexpected: {e}")
+\`\`\`
 
+**Your task:** Write \`parse_expression_value(raw)\` that:
+- Converts a string measurement to float
+- Returns \`None\` if empty, "N/A", non-numeric, or negative`,
+    starterCode: `def parse_expression_value(raw):
+    if not raw or raw.strip() in ("N/A", "NA", ""):
+        return None
+    try:
+        value = float(raw.strip())
+        if value < 0:
+            return None
+        return value
+    except ValueError:
+        return None
 
-# Test your function
-result = calculate_concentration(0.84)
-print(round(result, 4))`,
+tests = ["3.14", "  6.2  ", "N/A", "", "not_a_number", "-1.5", "0", "1e4"]
+results = [parse_expression_value(x) for x in tests]
+print(results)
+`,
     hints: [
-      'Use the `return` keyword: `return value`',
-      'return absorbance / extinction_coefficient',
-      'Expected output: 0.04',
+      'float("not_a_number") raises ValueError — catch it specifically.',
+      'Check for negative AFTER conversion, not before.',
     ],
     tests: [
       {
-        description: 'calculate_concentration is defined',
-        testCode: `assert callable(_ns.get('calculate_concentration')), "Function 'calculate_concentration' not found"`,
+        description: 'parse_expression_value("3.14") returns 3.14',
+        testCode: `f = _ns['parse_expression_value']; assert f("3.14") == 3.14`,
       },
       {
-        description: 'Returns correct value for (0.84)',
-        testCode: `f = _ns['calculate_concentration']; r = f(0.84); assert abs(r - 0.04) < 0.0001, f"Expected ~0.04, got {r}"`,
+        description: 'parse_expression_value("N/A") returns None',
+        testCode: `f = _ns['parse_expression_value']; assert f("N/A") is None`,
       },
       {
-        description: 'Default extinction coefficient works',
-        testCode: `f = _ns['calculate_concentration']; r = f(0.5, 10.0); assert abs(r - 0.05) < 0.0001, f"Expected 0.05 for (0.5, 10.0), got {r}"`,
+        description: 'parse_expression_value("not_a_number") returns None',
+        testCode: `f = _ns['parse_expression_value']; assert f("not_a_number") is None`,
       },
       {
-        description: '"0.04" is printed',
-        testCode: `assert "0.04" in _stdout, f"Expected '0.04' in output, got: {_stdout.strip()}"`,
+        description: 'parse_expression_value("-1.5") returns None',
+        testCode: `f = _ns['parse_expression_value']; assert f("-1.5") is None`,
+      },
+      {
+        description: 'parse_expression_value("1e4") returns 10000.0',
+        testCode: `f = _ns['parse_expression_value']; assert f("1e4") == 10000.0`,
       },
     ],
   },
 
-  // ═══════════════════════════════════════════════
-  // TIER 4 — ORGANISM  (500 XP)
-  // ═══════════════════════════════════════════════
+  // ══════════════════════════════════════════════════
+  // TIER 4 — ORGANISM (500 XP)
+  // Modules 5+6: Data wrangling & statistics (stdlib)
+  // ══════════════════════════════════════════════════
+
   {
     id: 16,
-    title: 'Unique Gene Finder',
+    title: 'CSV Data Wrangling',
     tier: 'Organism',
     tierLevel: 4,
     xp: 500,
-    icon: '🔍',
-    concepts: ['sets', 'set operations', 'sorted()'],
-    description: `Two labs sequenced the same sample and found overlapping but different gene lists. Find the genes unique to **either** lab (symmetric difference).
+    icon: '📊',
+    type: 'coding',
+    concepts: ['csv.DictReader', 'type casting', 'pandas preview'],
+    description: `**Reading structured data — what pandas does under the hood**
 
-Python **sets** enable efficient comparison:
+In a real analysis you'd use \`pandas.read_csv()\`. Python's built-in \`csv\` module shows you what happens underneath.
+
 \`\`\`python
-set(list)    # convert list → set
-setA ^ setB  # symmetric difference
-setA - setB  # only in A
-setA & setB  # intersection
+import csv, io
+reader = csv.DictReader(io.StringIO(csv_text))
+rows = list(reader)
+# rows[0] → {"gene": "BRCA1", "log2fc": "-2.3", ...}
+# ALL values are strings — you must cast!
 \`\`\`
 
-Store unique genes in \`unique_genes\`. Print each gene **sorted alphabetically**, one per line.`,
-    starterCode: `lab_a_genes = ["BRCA1", "TP53", "EGFR", "MYC", "KRAS"]
-lab_b_genes = ["TP53", "EGFR", "PTEN", "ALK", "MYC"]
+**Your task:**
+- \`genes_df\` = list of dicts with \`gene\` (str), \`log2fc\` (float), \`padj\` (float)
+- \`sig_up\` = gene names with log2fc > 1 AND padj < 0.05, sorted
+- \`mean_log2fc\` = mean across ALL genes, rounded to 4dp`,
+    starterCode: `import csv, io
 
-# Genes present in one lab but not both
-unique_genes =
+csv_data = """gene,log2fc,padj
+BRCA1,-2.3,0.001
+MYC,3.1,0.0001
+TP53,-0.4,0.42
+EGFR,1.8,0.003
+PTEN,-1.5,0.02
+KRAS,0.7,0.15
+RB1,-2.1,0.008
+STAT3,2.5,0.04
+"""
 
-# Print sorted, one per line
-for gene in sorted(unique_genes):
-    print(gene)`,
+reader = csv.DictReader(io.StringIO(csv_data.strip()))
+
+# Cast types — CSV values are always strings!
+genes_df = [
+    {"gene": row["gene"], "log2fc": float(row["log2fc"]), "padj": float(row["padj"])}
+    for row in reader
+]
+
+sig_up = sorted([r["gene"] for r in genes_df if r["log2fc"] > 1 and r["padj"] < 0.05])
+
+mean_log2fc = round(sum(r["log2fc"] for r in genes_df) / len(genes_df), 4)
+
+print("Significant up:", sig_up)
+print("Mean log2FC:", mean_log2fc)
+`,
     hints: [
-      'Convert to sets first: `set(lab_a_genes)`',
-      '`^` gives the symmetric difference (items in A or B but not both).',
-      'unique_genes = set(lab_a_genes) ^ set(lab_b_genes)',
+      'csv.DictReader returns rows as dicts, but values are always strings.',
+      'Cast with float(row["log2fc"]) — same as R\'s as.numeric().',
     ],
     tests: [
       {
-        description: 'unique_genes contains {ALK, BRCA1, KRAS, PTEN}',
-        testCode: `ug = set(_ns.get('unique_genes', set())); assert ug == {"BRCA1","KRAS","PTEN","ALK"}, f"Expected {{ALK, BRCA1, KRAS, PTEN}}, got {ug}"`,
+        description: 'genes_df has 8 rows with float values',
+        testCode: `df = _ns.get('genes_df'); assert len(df) == 8 and isinstance(df[0]['log2fc'], float)`,
       },
       {
-        description: 'Genes printed in alphabetical order',
-        testCode: `lines = [l.strip() for l in _stdout.strip().split('\\n') if l.strip()]; assert lines == sorted(lines), f"Not alphabetical: {lines}"`,
+        description: 'sig_up = ["EGFR", "MYC", "STAT3"]',
+        testCode: `assert _ns.get('sig_up') == ['EGFR','MYC','STAT3'], f"Got {_ns.get('sig_up')}"`,
       },
       {
-        description: 'All 4 unique genes are printed',
-        testCode: `assert all(g in _stdout for g in ["ALK","BRCA1","KRAS","PTEN"]), "Not all unique genes printed"`,
+        description: 'mean_log2fc is correct',
+        testCode: `m = _ns.get('mean_log2fc'); expected = round((-2.3+3.1-0.4+1.8-1.5+0.7-2.1+2.5)/8, 4); assert abs(m - expected) < 0.001`,
       },
     ],
   },
 
   {
     id: 17,
-    title: 'Translate Codons',
+    title: 'GroupBy from Scratch',
     tier: 'Organism',
     tierLevel: 4,
     xp: 500,
-    icon: '🔤',
-    concepts: ['range(step)', 'dict.get()', 'string building', 'break'],
-    description: `Translate an RNA sequence into a protein!
+    icon: '🗂️',
+    type: 'coding',
+    concepts: ['defaultdict', 'groupby', 'aggregation', 'pandas preview'],
+    description: `**GroupBy — the pandas .groupby() concept in pure Python**
 
-**Algorithm:**
-1. Iterate over the RNA in steps of 3: \`range(0, len(rna), 3)\`
-2. Extract each codon: \`rna[i:i+3]\`
-3. Look it up in the codon table
-4. Stop at a stop codon (\`"*"\`)
-5. Append the amino acid to \`protein\`
+\`\`\`r
+# dplyr
+df %>% group_by(tissue) %>% summarise(mean_expr = mean(expression))
+\`\`\`
 
-Print the final protein string.`,
-    starterCode: `codon_table = {
-    "AUG": "M", "UUU": "F", "UUC": "F", "UUA": "L",
-    "UCU": "S", "UAU": "Y", "UGU": "C", "UGG": "W",
-    "CGU": "R", "AUU": "I", "AAU": "N", "ACU": "T",
-    "GAU": "D", "GGU": "G", "GCU": "A", "GUU": "V",
-    "UAA": "*", "UAG": "*", "UGA": "*"
+\`\`\`python
+from collections import defaultdict
+groups = defaultdict(list)
+for row in data:
+    groups[row["tissue"]].append(row["expression"])
+# Then aggregate each group
+\`\`\`
+
+\`defaultdict(list)\` auto-creates an empty list for new keys — no \`KeyError\`, no need to check if the key exists first.
+
+**Your task:**
+- \`by_tissue\` = dict mapping tissue → list of expression values
+- \`tissue_means\` = dict mapping tissue → mean expression (2dp)
+- \`most_expressed_tissue\` = tissue with highest mean`,
+    starterCode: `from collections import defaultdict
+
+samples = [
+    {"tissue": "liver",  "gene": "ALB",   "expression": 8.4},
+    {"tissue": "brain",  "gene": "SNAP",  "expression": 6.1},
+    {"tissue": "liver",  "gene": "CYP3A4","expression": 7.2},
+    {"tissue": "lung",   "gene": "SFTPC", "expression": 9.3},
+    {"tissue": "brain",  "gene": "MAPT",  "expression": 5.8},
+    {"tissue": "lung",   "gene": "AGER",  "expression": 8.1},
+    {"tissue": "liver",  "gene": "APOB",  "expression": 6.9},
+    {"tissue": "brain",  "gene": "GBP",   "expression": 7.4},
+]
+
+by_tissue = defaultdict(list)
+for s in samples:
+    by_tissue[s["tissue"]].append(s["expression"])
+
+tissue_means = {
+    tissue: round(sum(vals) / len(vals), 2)
+    for tissue, vals in by_tissue.items()
 }
 
-rna = "AUGUUUUCUUAUUGGUGA"
-protein = ""
+most_expressed_tissue = max(tissue_means, key=tissue_means.get)
 
-# Iterate in steps of 3
-for i in range(0, len(rna), 3):
-    codon = rna[i:i+3]
-    amino_acid = codon_table.get(codon, "?")
-    if amino_acid == "*":
-        break
-    protein += amino_acid
-
-print(protein)`,
+print(dict(by_tissue))
+print(tissue_means)
+print(most_expressed_tissue)
+`,
     hints: [
-      '`range(0, len(rna), 3)` gives indices 0, 3, 6, 9…',
-      '`rna[i:i+3]` extracts the codon at position i.',
-      'Expected output: MFSYW',
+      'defaultdict(list) auto-creates empty lists — no KeyError.',
+      'max(dict, key=dict.get) finds the key with the highest value.',
     ],
     tests: [
       {
-        description: 'protein equals "MFSYW"',
-        testCode: `p = _ns.get('protein'); assert p == "MFSYW", f"Expected 'MFSYW', got '{p}'"`,
+        description: 'by_tissue["liver"] has 3 values',
+        testCode: `bt = _ns.get('by_tissue'); assert len(bt['liver']) == 3`,
       },
       {
-        description: '"MFSYW" is printed',
-        testCode: `assert "MFSYW" in _stdout, f"Expected 'MFSYW' in output"`,
+        description: 'tissue_means["lung"] ≈ 8.7',
+        testCode: `tm = _ns.get('tissue_means'); assert abs(tm['lung'] - round((9.3+8.1)/2, 2)) < 0.01`,
+      },
+      {
+        description: 'most_expressed_tissue is "lung"',
+        testCode: `assert _ns.get('most_expressed_tissue') == 'lung'`,
       },
     ],
   },
 
   {
     id: 18,
-    title: 'K-mer Counter',
+    title: 'Statistical Summary',
     tier: 'Organism',
     tierLevel: 4,
     xp: 500,
-    icon: '🧮',
-    concepts: ['dict.get()', 'sliding window', 'sorted()'],
-    description: `K-mer frequency analysis is fundamental in bioinformatics. Count all **3-mers** (overlapping) in a DNA sequence.
+    icon: '📈',
+    type: 'coding',
+    concepts: ['statistics module', 'Welch t-test', 'scipy preview'],
+    description: `**Python statistics module vs R's built-in stats**
 
-Use a sliding window:
-\`\`\`python
-for i in range(len(seq) - k + 1):
-    kmer = seq[i:i+k]
-\`\`\`
+| R | Python |
+|---|--------|
+| \`mean(x)\` | \`statistics.mean(x)\` |
+| \`sd(x)\` | \`statistics.stdev(x)\` |
+| \`median(x)\` | \`statistics.median(x)\` |
 
-Store counts in \`kmer_counts\` dict. Print each k-mer and its count, **sorted alphabetically**.
+For a proper t-test in Python you'd use \`scipy.stats.ttest_ind()\`. Here we implement it from scratch to understand the maths.
 
-Tip: \`kmer_counts[kmer] = kmer_counts.get(kmer, 0) + 1\``,
-    starterCode: `sequence = "ATCGATCGATCG"
-kmer_counts = {}
-k = 3
+**Your task:**
+- \`stats_ctrl\` and \`stats_treat\` = dicts with mean, stdev, n
+- \`t_stat\` = Welch's t-statistic: **(mean1 - mean2) / sqrt(var1/n1 + var2/n2)**
+- \`conclusion\` = "significant" if abs(t_stat) > 2.0`,
+    starterCode: `import statistics, math
 
-# Count all 3-mers
-for i in range(len(sequence) - k + 1):
-    kmer = sequence[i:i+k]
-    # Increment count (default 0 if not seen yet)
+control   = [2.1, 1.8, 2.4, 2.0, 1.9, 2.3, 1.7, 2.2]
+treatment = [4.5, 5.1, 4.8, 5.3, 4.7, 5.0, 4.9, 5.2]
 
+def summarise(values):
+    return {
+        "mean":  round(statistics.mean(values), 4),
+        "stdev": round(statistics.stdev(values), 4),
+        "n":     len(values),
+    }
 
-# Print sorted
-for kmer in sorted(kmer_counts):
-    print(f"{kmer}: {kmer_counts[kmer]}")`,
+stats_ctrl  = summarise(control)
+stats_treat = summarise(treatment)
+
+def welch_t(s1, s2):
+    se = math.sqrt(s1["stdev"]**2 / s1["n"] + s2["stdev"]**2 / s2["n"])
+    return (s1["mean"] - s2["mean"]) / se
+
+t_stat = round(welch_t(stats_ctrl, stats_treat), 4)
+conclusion = "significant" if abs(t_stat) > 2.0 else "not significant"
+
+print(f"t = {t_stat}  → {conclusion}")
+`,
     hints: [
-      '`dict.get(key, default)` returns the value or a default if missing.',
-      'kmer_counts[kmer] = kmer_counts.get(kmer, 0) + 1',
-      'ATC and TCG each appear 3 times.',
+      'statistics.stdev() uses ddof=1 (sample std), matching R\'s sd().',
+      'math.sqrt() for square root.',
     ],
     tests: [
       {
-        description: 'kmer_counts is a dictionary',
-        testCode: `assert isinstance(_ns.get('kmer_counts'), dict), "kmer_counts should be a dict"`,
+        description: 'stats_ctrl mean is ~2.05',
+        testCode: `import statistics; sc = _ns.get('stats_ctrl'); assert abs(sc['mean'] - statistics.mean([2.1,1.8,2.4,2.0,1.9,2.3,1.7,2.2])) < 0.01`,
       },
       {
-        description: 'ATC appears 3 times',
-        testCode: `kc = _ns.get('kmer_counts', {}); assert kc.get('ATC') == 3, f"Expected ATC:3, got ATC:{kc.get('ATC')}"`,
+        description: 't_stat is large negative (treatment >> control)',
+        testCode: `t = _ns.get('t_stat'); assert t < -2.0, f"Expected large negative t, got {t}"`,
       },
       {
-        description: 'TCG appears 3 times',
-        testCode: `kc = _ns.get('kmer_counts', {}); assert kc.get('TCG') == 3, f"Expected TCG:3, got TCG:{kc.get('TCG')}"`,
-      },
-      {
-        description: 'K-mers are printed sorted',
-        testCode: `assert "ATC" in _stdout and "3" in _stdout, "Print the k-mer counts"`,
+        description: 'conclusion is "significant"',
+        testCode: `assert _ns.get('conclusion') == 'significant'`,
       },
     ],
   },
 
-  // ═══════════════════════════════════════════════
-  // TIER 5 — ECOSYSTEM  (750–1000 XP)
-  // ═══════════════════════════════════════════════
   {
     id: 19,
+    title: 'Regex for Bioinformatics',
+    tier: 'Organism',
+    tierLevel: 4,
+    xp: 500,
+    icon: '🔍',
+    type: 'coding',
+    concepts: ['re', 'regex', 'findall', 'groups', 'R stringr comparison'],
+    description: `**Regex: R's stringr vs Python's re module**
+
+\`\`\`r
+library(stringr)
+str_detect(x, "ATG")
+str_extract_all(x, "[GC]")
+\`\`\`
+
+\`\`\`python
+import re
+bool(re.search("ATG", x))     # like str_detect()
+re.findall("[GC]", x)         # all matches
+m = re.search(r"(\\w+):(\\d+)", x)
+m.group(1), m.group(2)        # capture groups
+\`\`\`
+
+**Your task:**
+- \`parse_coord(s)\` parses \`"chr17:43044295-43125483"\` → dict \`{chrom, start, end}\` or \`None\`
+- \`kozak_sites\` = all matches of Kozak pattern \`[AG]CCATGG\` in \`test_seq\``,
+    starterCode: `import re
+
+def parse_coord(s):
+    m = re.match(r"(chr[\\w]+):(\\d+)-(\\d+)", s)
+    if not m:
+        return None
+    return {
+        "chrom": m.group(1),
+        "start": int(m.group(2)),
+        "end":   int(m.group(3)),
+    }
+
+def find_kozak(seq):
+    return re.findall(r"[AG]CCATGG", seq)
+
+print(parse_coord("chr17:43044295-43125483"))
+print(parse_coord("invalid"))
+
+test_seq = "ATTGCCATGGCGTACCATGGTTAACCATGGA"
+kozak_sites = find_kozak(test_seq)
+print(kozak_sites)
+`,
+    hints: [
+      'Use raw strings r"..." for patterns to avoid double-escaping \\.',
+      're.match() anchors at start; re.search() finds anywhere in string.',
+    ],
+    tests: [
+      {
+        description: 'parse_coord("chr17:43044295-43125483") returns correct dict',
+        testCode: `r = _ns['parse_coord']("chr17:43044295-43125483"); assert r == {"chrom":"chr17","start":43044295,"end":43125483}`,
+      },
+      {
+        description: 'parse_coord("invalid") returns None',
+        testCode: `assert _ns['parse_coord']("invalid") is None`,
+      },
+      {
+        description: 'kozak_sites finds [AG]CCATGG patterns',
+        testCode: `import re; expected = re.findall(r'[AG]CCATGG', "ATTGCCATGGCGTACCATGGTTAACCATGGA"); assert _ns.get('kozak_sites') == expected`,
+      },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════
+  // TIER 5 — ECOSYSTEM (750-1000 XP)
+  // ══════════════════════════════════════════════════
+
+  {
+    id: 20,
     title: 'FASTA Parser',
     tier: 'Ecosystem',
     tierLevel: 5,
     xp: 750,
-    icon: '🌐',
-    concepts: ['string parsing', 'multi-line loops', 'dictionaries'],
-    description: `FASTA is the universal format for biological sequences. Parse a multi-FASTA string into a dict mapping **name → sequence**.
+    icon: '🗄️',
+    type: 'coding',
+    concepts: ['FASTA', 'multi-line parsing', 'generators', 'biopython preview'],
+    description: `**FASTA parsing from scratch — daily bread of bioinformatics**
 
-Format:
+Biopython:
+\`\`\`python
+from Bio import SeqIO
+records = list(SeqIO.parse("seqs.fasta", "fasta"))
 \`\`\`
->GeneName optional description
-SEQUENCEDATA
+
+In R with Biostrings:
+\`\`\`r
+seqs <- readDNAStringSet("seqs.fasta")
 \`\`\`
 
-Lines starting with \`>\` are headers. The name is the **first word** after \`>\`.
+Understanding the format: lines starting with \`>\` are headers; subsequent lines are the sequence (may span multiple lines).
 
-Complete the parser and print each name with its sequence length (in bp).`,
-    starterCode: `fasta_data = """>BRCA1 breast cancer susceptibility gene
-ATCGATCGATCGATCG
->TP53 tumor suppressor
-GCTAGCTAGCTAGCTA
->EGFR epidermal growth factor receptor
-TTAATTAATTAATTAA"""
-
-sequences = {}
-current_name = None
-current_seq = []
-
-for line in fasta_data.strip().split("\\n"):
-    if line.startswith(">"):
-        if current_name:
-            sequences[current_name] = "".join(current_seq)
+**Your task:** Write \`parse_fasta(text)\` → list of \`{"id", "seq"}\` dicts. Then:
+- \`gc_contents\` = dict of id → GC% (1dp)
+- \`longest_seq_id\` = id of the longest sequence`,
+    starterCode: `def parse_fasta(text):
+    records = []
+    current_id = None
+    current_seq = []
+    for line in text.strip().splitlines():
+        line = line.strip()
+        if line.startswith(">"):
+            if current_id is not None:
+                records.append({"id": current_id, "seq": "".join(current_seq)})
+            current_id = line[1:].split()[0]
             current_seq = []
-        current_name = line[1:].split()[0]  # first word after >
-    else:
-        current_seq.append(line)
+        else:
+            current_seq.append(line)
+    if current_id is not None:
+        records.append({"id": current_id, "seq": "".join(current_seq)})
+    return records
 
-# Don't forget to save the last sequence!
+fasta_text = """>BRCA1 breast cancer 1
+ATGCGTACGTAGCTAGCTAGCGATCGATCG
+ATCGATCGATCGTAGCTAGCTAGCTAGCTA
+>TP53 tumour protein p53
+ATGCCCAGACTGCTTTAGACTTGACCTGGAG
+>EGFR epidermal growth factor receptor
+ATGCGACCCTCCGGGACGGCCGGGGCAGCGC
+TGCGATCGATCGATCGATCGATCGATCGAT
+CGTAGCTAGCTAGCTAGCTAGCTAGCTAGC"""
 
+records = parse_fasta(fasta_text)
 
-for name, seq in sequences.items():
-    print(f"{name}: {len(seq)} bp")`,
+def gc_percent(seq):
+    gc = seq.count('G') + seq.count('C')
+    return round(gc / len(seq) * 100, 1)
+
+gc_contents = {r["id"]: gc_percent(r["seq"]) for r in records}
+longest_seq_id = max(records, key=lambda r: len(r["seq"]))["id"]
+
+print(gc_contents)
+print(longest_seq_id)
+`,
     hints: [
-      'After the loop ends, the last sequence has not been saved yet.',
-      'Add: `if current_name: sequences[current_name] = "".join(current_seq)`',
-      'Each sequence is 16 bp.',
+      'Accumulate sequence lines until the next ">" header.',
+      'Don\'t forget to append the last record after the loop.',
     ],
     tests: [
       {
-        description: 'sequences dict has 3 entries',
-        testCode: `s = _ns.get('sequences', {}); assert len(s) == 3, f"Expected 3 sequences, got {len(s)}"`,
+        description: 'parse_fasta returns 3 records',
+        testCode: `r = _ns['parse_fasta'](_ns.get('fasta_text','')); assert len(r) == 3`,
       },
       {
-        description: 'BRCA1 sequence is correct',
-        testCode: `s = _ns.get('sequences', {}); assert s.get('BRCA1') == 'ATCGATCGATCGATCG', f"BRCA1 sequence wrong: '{s.get('BRCA1')}'"`,
+        description: 'Sequences contain no newlines',
+        testCode: `r = _ns['parse_fasta'](_ns.get('fasta_text','')); assert all('\\n' not in rec['seq'] for rec in r)`,
       },
       {
-        description: 'TP53 sequence is correct',
-        testCode: `s = _ns.get('sequences', {}); assert s.get('TP53') == 'GCTAGCTAGCTAGCTA', "TP53 sequence wrong"`,
+        description: 'gc_contents has 3 entries (0-100%)',
+        testCode: `gc = _ns.get('gc_contents'); assert len(gc) == 3 and all(0 <= v <= 100 for v in gc.values())`,
       },
       {
-        description: 'EGFR sequence is correct',
-        testCode: `s = _ns.get('sequences', {}); assert s.get('EGFR') == 'TTAATTAATTAATTAA', "EGFR sequence wrong"`,
-      },
-      {
-        description: 'Sequence lengths (16 bp) are printed',
-        testCode: `assert "16" in _stdout, "Expected '16 bp' in output"`,
+        description: 'longest_seq_id is "EGFR"',
+        testCode: `assert _ns.get('longest_seq_id') == 'EGFR'`,
       },
     ],
   },
 
-  {
-    id: 20,
-    title: 'The Grand Pipeline',
-    tier: 'Ecosystem',
-    tierLevel: 5,
-    xp: 1000,
-    icon: '🏆',
-    concepts: ['functions', 'dicts', 'all Python fundamentals'],
-    description: `**The final challenge!** Build a complete DNA analysis pipeline.
-
-Write \`analyze_sequence(dna)\` that returns a dict with:
-| Key | Value |
-|-----|-------|
-| \`"length"\` | number of bases |
-| \`"gc_content"\` | % G+C, rounded to 2 dp |
-| \`"rna"\` | RNA transcript (T→U) |
-| \`"reverse_complement"\` | reverse complement |
-
-Test it on \`"ATCGCGATCG"\` and print each key: value pair.`,
-    starterCode: `def analyze_sequence(dna):
-    length = len(dna)
-
-    gc_count = dna.count("G") + dna.count("C")
-    gc_content = round((gc_count / length) * 100, 2)
-
-    rna = dna.replace("T", "U")
-
-    rev = dna[::-1]
-    reverse_complement = (rev
-        .replace("A", "x").replace("T", "A").replace("x", "T")
-        .replace("G", "y").replace("C", "G").replace("y", "C")
-    )
-
-    return {
-        "length": length,
-        "gc_content": gc_content,
-        "rna": rna,
-        "reverse_complement": reverse_complement
-    }
-
-result = analyze_sequence("ATCGCGATCG")
-
-for key, value in result.items():
-    print(f"{key}: {value}")`,
-    hints: [
-      'The starter code is nearly complete — read through it carefully.',
-      'GC content: `round((gc_count / length) * 100, 2)`',
-      'Expected reverse complement: "CGATCGCGAT"',
-    ],
-    tests: [
-      {
-        description: 'analyze_sequence is callable',
-        testCode: `assert callable(_ns.get('analyze_sequence')), "Function 'analyze_sequence' not found"`,
-      },
-      {
-        description: 'length is 10',
-        testCode: `f = _ns['analyze_sequence']; r = f("ATCGCGATCG"); assert r.get('length') == 10, f"Expected length 10, got {r.get('length')}"`,
-      },
-      {
-        description: 'gc_content is 60.0%',
-        testCode: `f = _ns['analyze_sequence']; r = f("ATCGCGATCG"); assert abs(r.get('gc_content', 0) - 60.0) < 0.1, f"Expected 60.0%, got {r.get('gc_content')}"`,
-      },
-      {
-        description: 'rna is "AUCGCGAUCG"',
-        testCode: `f = _ns['analyze_sequence']; r = f("ATCGCGATCG"); assert r.get('rna') == 'AUCGCGAUCG', f"Expected 'AUCGCGAUCG', got {r.get('rna')}"`,
-      },
-      {
-        description: 'reverse_complement is "CGATCGCGAT"',
-        testCode: `f = _ns['analyze_sequence']; r = f("ATCGCGATCG"); assert r.get('reverse_complement') == 'CGATCGCGAT', f"Expected 'CGATCGCGAT', got {r.get('reverse_complement')}"`,
-      },
-    ],
-  },
-
-  // ═══════════════════════════════════════════════════
-  // BUG HUNT CHALLENGES — find and fix the bugs!
-  // ═══════════════════════════════════════════════════
   {
     id: 21,
-    title: 'Debug: Case Blindness',
-    tier: 'Bug Hunt',
-    tierLevel: 3,
-    type: 'bugHunt',
-    xp: 300,
-    icon: '🐛',
-    concepts: ['string methods', 'case sensitivity'],
-    description: `🐛 **This code has a bug — find it and fix it!**
+    title: 'K-mer Counter',
+    tier: 'Ecosystem',
+    tierLevel: 5,
+    xp: 750,
+    icon: '🧩',
+    type: 'coding',
+    concepts: ['sliding window', 'Counter', 'dict comprehension'],
+    description: `**K-mer counting — the basis of genome assembly and repeat detection**
 
-The function below should count G and C nucleotides in a DNA sequence, but it always returns \`0\`.
+\`\`\`r
+# R with Biostrings
+oligonucleotideFrequency(dna, width=3)
+\`\`\`
 
-Run the code to see the wrong output, then find and fix the bug. The correct answer for \`"GCTAGCTAGCTA"\` is \`6\`.
+\`\`\`python
+from collections import Counter
+def count_kmers(seq, k):
+    return Counter(seq[i:i+k] for i in range(len(seq) - k + 1))
+\`\`\`
 
-> **Hint:** Python strings are case-sensitive. \`"g" != "G"\``,
-    starterCode: `sequence = "GCTAGCTAGCTA"
+**Your task:**
+- \`count_kmers(seq, k)\` → dict of k-mer counts
+- \`top_3mers\` = top 5 most common 3-mers (list of (kmer, count) tuples)
+- \`cpg_sites\` = count of "CG" dinucleotides
+- \`kmer_diversity\` = unique 3-mers / 64 (all possible 3-mers), rounded to 3dp`,
+    starterCode: `from collections import Counter
 
-# Count GC content — but something is wrong...
-g_count = sequence.count("g")
-c_count = sequence.count("c")
-gc_count = g_count + c_count
+sequence = (
+    "ATGCGTACGATCGATCGCGCGATCGATCGTAGCTAGCTAGCTAGCG"
+    "CGCGATCGCGATCGATCGATCGATCGATCGATCGATCGATCGATCG"
+    "ATCGATCGATCGATCGCGCGATCGATCGTAGCTAGCTAGCTAGCG"
+)
 
-print(gc_count)`,
+def count_kmers(seq, k):
+    return dict(Counter(seq[i:i+k] for i in range(len(seq) - k + 1)))
+
+kmer_counts = count_kmers(sequence, 3)
+top_3mers = sorted(kmer_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+cpg_sites = count_kmers(sequence, 2).get("CG", 0)
+kmer_diversity = round(len(kmer_counts) / 64, 3)
+
+print("Top 3-mers:", top_3mers)
+print("CpG sites:", cpg_sites)
+print("Diversity:", kmer_diversity)
+`,
     hints: [
-      'Run the code. What does it print?',
-      'Python\'s .count() is case-sensitive. "GCTA".count("g") → 0',
-      'Fix: use uppercase "G" and "C"',
+      'range(len(seq) - k + 1) gives the correct number of positions.',
+      'Counter.most_common(n) gives the n most frequent items.',
     ],
     tests: [
       {
-        description: 'gc_count equals 6',
-        testCode: `assert _ns.get('gc_count') == 6, f"Expected 6, got {_ns.get('gc_count')} — check case sensitivity in .count()"`,
+        description: 'count_kmers("ATGC", 2) = {"AT":1,"TG":1,"GC":1}',
+        testCode: `f = _ns['count_kmers']; assert f("ATGC", 2) == {"AT":1,"TG":1,"GC":1}`,
       },
       {
-        description: '6 is printed',
-        testCode: `assert "6" in _stdout, "Expected '6' in output"`,
+        description: 'top_3mers is a list of 5 (kmer, count) tuples',
+        testCode: `t = _ns.get('top_3mers'); assert len(t) == 5 and all(len(x)==2 for x in t)`,
+      },
+      {
+        description: 'cpg_sites > 0',
+        testCode: `assert _ns.get('cpg_sites') > 0`,
+      },
+      {
+        description: 'kmer_diversity between 0 and 1',
+        testCode: `d = _ns.get('kmer_diversity'); assert 0 < d <= 1.0`,
       },
     ],
   },
 
   {
     id: 22,
-    title: 'Debug: Missing Factor',
-    tier: 'Bug Hunt',
-    tierLevel: 3,
-    type: 'bugHunt',
-    xp: 300,
-    icon: '🐛',
-    concepts: ['arithmetic', 'percentages'],
-    description: `🐛 **This code has a bug — find it and fix it!**
+    title: 'The DESeq2 Pipeline',
+    tier: 'Ecosystem',
+    tierLevel: 5,
+    xp: 1000,
+    icon: '🔬',
+    type: 'coding',
+    concepts: ['pipeline', 'data integration', 'dict unpacking', 'dplyr equivalent'],
+    description: `**The Grand Pipeline — mimicking dplyr/DESeq2 downstream analysis**
 
-This script should calculate GC content as a **percentage** (0–100), but it outputs a decimal between 0 and 1 instead.
+\`\`\`r
+res %>%
+  filter(!is.na(padj)) %>%
+  mutate(direction = case_when(
+    log2FoldChange > 1 & padj < 0.05 ~ "up",
+    log2FoldChange < -1 & padj < 0.05 ~ "down",
+    TRUE ~ "ns")) %>%
+  arrange(padj)
+\`\`\`
 
-For \`"ATCGCGATCG"\` the correct answer is \`60.0\`.
+**Your task — build this pipeline in pure Python:**
+1. Filter out rows with \`padj = None\` (like \`na.omit()\`)
+2. Add \`"direction"\` field: \`"up"\`, \`"down"\`, or \`"ns"\`
+3. Sort by padj ascending
+4. Produce \`clean_results\`, \`volcano_data\` (log2fc, -log10padj) tuples, and \`summary\` dict`,
+    starterCode: `import math
 
-> **Hint:** To convert a fraction to a percentage, multiply by 100.`,
-    starterCode: `sequence = "ATCGCGATCG"
+raw_results = [
+    {"gene": "MYC",   "log2fc":  3.1, "padj": 0.0001},
+    {"gene": "TP53",  "log2fc": -0.4, "padj": 0.42},
+    {"gene": "BRCA1", "log2fc": -2.3, "padj": 0.001},
+    {"gene": "KRAS",  "log2fc":  0.7, "padj": 0.15},
+    {"gene": "PTEN",  "log2fc": -1.5, "padj": 0.02},
+    {"gene": "EGFR",  "log2fc":  1.8, "padj": 0.003},
+    {"gene": "RB1",   "log2fc": -2.1, "padj": 0.008},
+    {"gene": "STAT3", "log2fc":  2.5, "padj": 0.04},
+    {"gene": "IDH1",  "log2fc":  0.3, "padj": None},
+    {"gene": "NOTCH1","log2fc": -0.1, "padj": None},
+]
 
-gc = sequence.count("G") + sequence.count("C")
-percentage = gc / len(sequence)   # something missing here...
+def direction(log2fc, padj):
+    if abs(log2fc) > 1 and padj < 0.05:
+        return "up" if log2fc > 0 else "down"
+    return "ns"
 
-print(round(percentage, 1))`,
+# Filter, add direction, sort
+clean_results = sorted(
+    [{**r, "direction": direction(r["log2fc"], r["padj"])}
+     for r in raw_results if r["padj"] is not None],
+    key=lambda r: r["padj"]
+)
+
+volcano_data = [(r["log2fc"], round(-math.log10(r["padj"]), 3)) for r in clean_results]
+
+from collections import Counter
+counts = Counter(r["direction"] for r in clean_results)
+summary = {"up": counts["up"], "down": counts["down"], "ns": counts["ns"]}
+
+print(f"Genes: {len(clean_results)}, Summary: {summary}")
+`,
     hints: [
-      'What does dividing give you? A number between 0 and 1.',
-      'To get a percentage, multiply by 100.',
-      'percentage = (gc / len(sequence)) * 100',
+      '{**r, "direction": ...} merges a new key — like dplyr\'s mutate().',
+      'sorted(..., key=lambda r: r["padj"]) = arrange(padj).',
     ],
     tests: [
       {
-        description: 'percentage equals 60.0',
-        testCode: `p = _ns.get('percentage'); assert p is not None and abs(p - 60.0) < 0.01, f"Expected 60.0, got {p}"`,
+        description: 'clean_results has 8 genes (2 None rows removed)',
+        testCode: `assert len(_ns.get('clean_results',[])) == 8`,
       },
       {
-        description: '"60.0" is printed',
-        testCode: `assert "60.0" in _stdout, f"Expected '60.0' in output, got: {_stdout.strip()}"`,
+        description: 'clean_results sorted by padj ascending',
+        testCode: `cr = _ns.get('clean_results'); padjs = [r['padj'] for r in cr]; assert padjs == sorted(padjs)`,
+      },
+      {
+        description: 'summary = {up:3, down:3, ns:2}',
+        testCode: `s = _ns.get('summary'); assert s == {'up':3,'down':3,'ns':2}, f"Got {s}"`,
+      },
+      {
+        description: 'volcano_data has correct shape',
+        testCode: `vd = _ns.get('volcano_data'); assert len(vd) == 8 and all(len(t)==2 for t in vd)`,
       },
     ],
   },
 
+  // ══════════════════════════════════════════════════
+  // BUG HUNT (300-500 XP) — Classic R→Python mistakes
+  // ══════════════════════════════════════════════════
+
   {
     id: 23,
-    title: 'Debug: Off-By-One Codon',
+    title: 'Debug: Off-by-One Index',
     tier: 'Bug Hunt',
-    tierLevel: 3,
-    type: 'bugHunt',
-    xp: 400,
+    tierLevel: 5,
+    xp: 300,
     icon: '🐛',
-    concepts: ['range()', 'string slicing', 'off-by-one'],
-    description: `🐛 **This code has a bug — find it and fix it!**
+    type: 'bugHunt',
+    concepts: ['0-based indexing', 'R vs Python', 'off-by-one'],
+    description: `**Bug: R→Python indexing mistake**
 
-This script slices an RNA sequence into codons (3-letter groups: AUG, UUU, …). But the step size is wrong, so the codons overlap and the result is incorrect.
+This R user forgot Python is 0-indexed. They want the **first** nucleotide and the **first codon** (bases 1–3).
 
-For \`"AUGUUUCGUUGA"\` the correct codons are \`['AUG', 'UUU', 'CGU', 'UGA']\`.
+In R: \`seq[1]\` = first element. In Python: \`seq[0]\` = first element.
 
-> **Hint:** Codons are exactly **3** bases long. What should the step be in \`range()\`?`,
-    starterCode: `rna = "AUGUUUCGUUGA"
-codons = []
+Find and fix the off-by-one bugs.`,
+    starterCode: `sequence = "ATGCGTAACGTA"
 
-for i in range(0, len(rna), 4):   # bug is on this line
-    codons.append(rna[i:i+3])
+# Bug: R-style 1-based indexing
+first_base = sequence[1]    # ← BUG: should be [0]
 
-print(codons)`,
+# Bug: R-style slice
+first_codon = sequence[1:4] # ← BUG: should be [0:3]
+
+# Correct (negative indexing works the same)
+last_base = sequence[-1]
+
+print(first_base, first_codon, last_base)
+`,
     hints: [
-      'Run the code. How many codons does it produce?',
-      'Codons are 3 bases long, so you step by 3, not 4.',
-      'Change 4 → 3 in range()',
+      'Python first element is index 0, not 1.',
+      'sequence[0:3] gives positions 0, 1, 2.',
     ],
     tests: [
       {
-        description: 'codons equals [\'AUG\', \'UUU\', \'CGU\', \'UGA\']',
-        testCode: `c = _ns.get('codons', []); assert c == ['AUG','UUU','CGU','UGA'], f"Expected ['AUG','UUU','CGU','UGA'], got {c}"`,
+        description: 'first_base is "A" (index 0)',
+        testCode: `assert _ns.get('first_base') == 'A', f"Expected 'A', got {repr(_ns.get('first_base'))} — Python is 0-indexed!"`,
       },
       {
-        description: 'Codons are printed',
-        testCode: `assert "AUG" in _stdout and "CGU" in _stdout, "Print the codons list"`,
+        description: 'first_codon is "ATG" (slice 0:3)',
+        testCode: `assert _ns.get('first_codon') == 'ATG', f"Expected 'ATG', got {repr(_ns.get('first_codon'))} — use [0:3]"`,
+      },
+      {
+        description: 'last_base is "A"',
+        testCode: `assert _ns.get('last_base') == 'A'`,
       },
     ],
   },
 
   {
     id: 24,
-    title: 'Debug: Wrong Value Appended',
+    title: 'Debug: The Mutation Trap',
     tier: 'Bug Hunt',
-    tierLevel: 4,
-    type: 'bugHunt',
-    xp: 400,
+    tierLevel: 5,
+    xp: 350,
     icon: '🐛',
-    concepts: ['dict.items()', 'list.append()', 'variables'],
-    description: `🐛 **This code has a bug — find it and fix it!**
+    type: 'bugHunt',
+    concepts: ['mutability', '.copy()', 'reference vs value', 'R comparison'],
+    description: `**Bug: Python lists are mutable — \`=\` copies the reference, not the data**
 
-This script should collect the **names** of large proteins (molecular weight > 50,000 Da) but it's appending the wrong thing.
+In R, \`b <- a\` makes a copy (copy-on-modify). In Python, \`b = a\` makes both point to the same list:
+\`\`\`python
+a = [1, 2, 3]
+b = a          # SAME list!
+b[0] = 99      # also changes a!
+# Fix:
+b = a.copy()   # or b = list(a) or b = a[:]
+\`\`\`
 
-For the given dict, the correct output is \`['Albumin', 'Hemoglobin']\`.
+Fix the code so \`original_samples\` is unchanged after normalisation.`,
+    starterCode: `original_samples = [4.2, 6.1, 3.8, 5.5, 7.2, 4.9]
 
-> **Hint:** In a \`for name, weight in dict.items():\` loop — you have two variables. Are you appending the right one?`,
-    starterCode: `proteins = {
-    "Insulin": 5733, "Albumin": 69000,
-    "Hemoglobin": 64000, "Lysozyme": 14300
-}
+# Bug: copies the reference, not the data!
+normalised = original_samples   # ← BUG: use .copy()
 
-large = []
-for name, weight in proteins.items():
-    if weight > 50000:
-        large.append(weight)   # bug is on this line
+mean_val = sum(normalised) / len(normalised)
+normalised = [x / mean_val for x in normalised]
 
-print(sorted(large))`,
+print("Original:", original_samples)
+print("Normalised:", normalised)
+`,
     hints: [
-      'Run it. What does it print? Numbers or names?',
-      'You want to collect protein names, not their weights.',
-      'Change large.append(weight) → large.append(name)',
+      'normalised = original_samples.copy() creates an independent copy.',
+      'Or: normalised = original_samples[:]',
     ],
     tests: [
       {
-        description: 'large contains protein names (not numbers)',
-        testCode: `l = _ns.get('large', []); assert all(isinstance(x, str) for x in l), f"Expected strings (names), got: {l}"`,
+        description: 'original_samples unchanged: [4.2, 6.1, 3.8, 5.5, 7.2, 4.9]',
+        testCode: `assert _ns.get('original_samples') == [4.2, 6.1, 3.8, 5.5, 7.2, 4.9], f"original_samples was mutated: {_ns.get('original_samples')}"`,
       },
       {
-        description: 'large equals [\'Albumin\', \'Hemoglobin\'] (sorted)',
-        testCode: `l = sorted(_ns.get('large', [])); assert l == ['Albumin','Hemoglobin'], f"Expected ['Albumin','Hemoglobin'], got {l}"`,
-      },
-      {
-        description: 'Sorted names are printed',
-        testCode: `assert "Albumin" in _stdout and "Hemoglobin" in _stdout, "Print the sorted list of large protein names"`,
+        description: 'normalised values sum to ~6.0',
+        testCode: `n = _ns.get('normalised'); assert abs(sum(n) - 6.0) < 0.01`,
       },
     ],
   },
 
   {
     id: 25,
-    title: 'Debug: Frozen Counter',
+    title: 'Debug: String + Number',
     tier: 'Bug Hunt',
-    tierLevel: 4,
-    type: 'bugHunt',
-    xp: 500,
+    tierLevel: 5,
+    xp: 300,
     icon: '🐛',
-    concepts: ['dict counters', 'increment bug', 'functions'],
-    description: `🐛 **This code has a bug — find it and fix it!**
+    type: 'bugHunt',
+    concepts: ['TypeError', 'str()', 'type coercion', 'R comparison'],
+    description: `**Bug: Python does not silently coerce types like R**
 
-This function counts how many times each amino acid appears in a protein sequence. But all counts come out as \`1\` — even for amino acids that appear multiple times.
+In R:
+\`\`\`r
+paste0("GC content: ", 0.623)  # "GC content: 0.623" — works silently
+\`\`\`
 
-For \`"MFSYWMM"\`, the correct output is \`{'M': 3, 'F': 1, 'S': 1, 'Y': 1, 'W': 1}\`.
+In Python:
+\`\`\`python
+"GC content: " + 0.623     # TypeError!
+"GC content: " + str(0.623) # ✓ explicit conversion
+f"GC content: {0.623:.1%}" # ✓ f-string (even better)
+\`\`\`
 
-> **Hint:** Look very carefully at the line inside the loop. Is it actually incrementing the count?`,
-    starterCode: `def count_aas(seq):
-    counts = {}
-    for aa in seq:
-        if aa not in counts:
-            counts[aa] = 1
-        counts[aa] = counts[aa] + 0   # bug is on this line
+Fix the two TypeError bugs below.`,
+    starterCode: `sequence = "ATGCCCGTAGCTAGCGCCC"
+gc_count = sequence.count('G') + sequence.count('C')
+gc_fraction = gc_count / len(sequence)
 
-    return counts
+# Bug 1: str + float → TypeError
+report_line = "GC content: " + gc_fraction   # ← BUG
 
-result = count_aas("MFSYWMM")
-print(result)`,
+# Bug 2: str + int → TypeError
+count_line = "G+C bases: " + gc_count        # ← BUG
+
+print(report_line)
+print(count_line)
+`,
     hints: [
-      'Run it. What does it print for M? Should be 3.',
-      'The counter never increments — look at what you\'re adding.',
-      'Change + 0 → + 1',
+      'f"GC content: {gc_fraction:.1%}" formats as percentage.',
+      'Or wrap in str(): "GC content: " + str(gc_fraction)',
     ],
     tests: [
       {
-        description: 'count_aas is callable',
-        testCode: `assert callable(_ns.get('count_aas')), "Function 'count_aas' not found"`,
+        description: 'report_line is a string containing GC info',
+        testCode: `rl = _ns.get('report_line'); assert isinstance(rl, str) and 'GC' in rl.upper() or 'gc' in rl.lower(), f"Got {repr(rl)}"`,
       },
       {
-        description: 'M is counted 3 times',
-        testCode: `f = _ns['count_aas']; r = f("MFSYWMM"); assert r.get('M') == 3, f"Expected M:3, got M:{r.get('M')}"`,
-      },
-      {
-        description: 'All amino acids counted correctly',
-        testCode: `f = _ns['count_aas']; r = f("MFSYWMM"); assert r == {'M':3,'F':1,'S':1,'Y':1,'W':1}, f"Expected correct counts, got {r}"`,
-      },
-      {
-        description: 'Result is printed',
-        testCode: `assert "M" in _stdout and "3" in _stdout, "Print the result dict"`,
+        description: 'count_line is a string (no TypeError)',
+        testCode: `cl = _ns.get('count_line'); assert isinstance(cl, str), f"Got {repr(cl)}"`,
       },
     ],
   },
+
+  {
+    id: 26,
+    title: 'Debug: KeyError',
+    tier: 'Bug Hunt',
+    tierLevel: 5,
+    xp: 400,
+    icon: '🐛',
+    type: 'bugHunt',
+    concepts: ['KeyError', 'dict.get()', 'R NULL comparison'],
+    description: `**Bug: Direct dict access raises KeyError; R returns NULL silently**
+
+In R:
+\`\`\`r
+annot[["NOTCH1"]]  # NULL (no error)
+\`\`\`
+
+In Python:
+\`\`\`python
+annot["NOTCH1"]               # KeyError!
+annot.get("NOTCH1")           # None — safe
+annot.get("NOTCH1", "Unknown") # with default
+\`\`\`
+
+Fix the loop so missing genes return \`"Unknown"\` instead of crashing.`,
+    starterCode: `gene_annotations = {
+    "TP53":  {"function": "tumour suppressor", "pathway": "DNA repair"},
+    "BRCA1": {"function": "DNA repair",         "pathway": "homologous recombination"},
+    "MYC":   {"function": "transcription factor","pathway": "cell cycle"},
+}
+
+query_genes = ["TP53", "NOTCH1", "MYC", "BRAF", "BRCA1"]
+
+results = {}
+for gene in query_genes:
+    # Bug: crashes on missing keys
+    results[gene] = gene_annotations[gene]["function"]   # ← BUG
+
+print(results)
+`,
+    hints: [
+      'gene_annotations.get(gene, {}) returns empty dict for missing keys.',
+      'Chain: gene_annotations.get(gene, {}).get("function", "Unknown")',
+    ],
+    tests: [
+      {
+        description: 'No KeyError — all 5 genes handled',
+        testCode: `r = _ns.get('results'); assert len(r) == 5, f"Expected 5 keys, got {len(r) if r else 0}"`,
+      },
+      {
+        description: 'Known genes have correct annotations',
+        testCode: `r = _ns.get('results'); assert r.get('TP53') == 'tumour suppressor' and r.get('MYC') == 'transcription factor'`,
+      },
+      {
+        description: 'Missing genes return a string (not crash)',
+        testCode: `r = _ns.get('results'); assert isinstance(r.get('NOTCH1'), str)`,
+      },
+    ],
+  },
+
+  {
+    id: 27,
+    title: 'Debug: Integer Division',
+    tier: 'Bug Hunt',
+    tierLevel: 5,
+    xp: 350,
+    icon: '🐛',
+    type: 'bugHunt',
+    concepts: ['floor division', '//', '/', 'R comparison'],
+    description: `**Bug: \`//\` is floor division, not "divide"**
+
+In Python:
+- \`5 / 2\` → \`2.5\` (true division — like R)
+- \`5 // 2\` → \`2\` (floor division — truncates!)
+
+An R user used \`//\` thinking it meant "divide". This silently produces wrong results.
+
+Fix the GC content and mean read depth calculations:`,
+    starterCode: `# Bug 1: floor division gives truncated mean
+total_reads = 1_500_000
+n_samples = 4
+mean_reads = total_reads // n_samples   # ← BUG: use /
+
+# Bug 2: order of operations + floor division = wrong GC%
+gc_bases = 423
+total_bases = 1000
+gc_percent = gc_bases // total_bases * 100  # ← BUG: // first → 0 * 100 = 0!
+
+print(f"Mean reads: {mean_reads}")
+print(f"GC%: {gc_percent}")
+`,
+    hints: [
+      'Use / (not //) for float division.',
+      'gc_bases / total_bases * 100 — single slash first.',
+    ],
+    tests: [
+      {
+        description: 'mean_reads is 375000 (not truncated)',
+        testCode: `mr = _ns.get('mean_reads'); assert mr == 375000.0 or mr == 375000`,
+      },
+      {
+        description: 'gc_percent is 42.3 (not 0)',
+        testCode: `gc = _ns.get('gc_percent'); assert abs(gc - 42.3) < 0.01, f"Expected 42.3, got {gc}"`,
+      },
+    ],
+  },
+
+  {
+    id: 28,
+    title: 'Debug: Scope Bug',
+    tier: 'Bug Hunt',
+    tierLevel: 5,
+    xp: 350,
+    icon: '🐛',
+    type: 'bugHunt',
+    concepts: ['scope', 'global', 'UnboundLocalError', 'R comparison'],
+    description: `**Bug: Python functions can READ outer variables but not REASSIGN them without \`global\`**
+
+In R, \`<<-\` modifies the parent environment. In Python, reassigning an outer variable inside a function without \`global\` causes \`UnboundLocalError\`:
+\`\`\`python
+count = 0
+def increment():
+    count += 1   # UnboundLocalError!
+
+def increment():
+    global count
+    count += 1   # ✓ with global declaration
+\`\`\`
+
+**Better practice:** don't use global state — return values instead.
+
+Fix the counter function (either add \`global\`, or refactor to avoid it):`,
+    starterCode: `passed_qc = 0
+
+def check_gene(expression_value, threshold=1.0):
+    if expression_value >= threshold:
+        passed_qc += 1   # ← UnboundLocalError!
+    return expression_value >= threshold
+
+expression_values = [0.5, 2.1, 0.3, 4.8, 1.1, 0.9, 3.2]
+results = [check_gene(v) for v in expression_values]
+print(f"Passed QC: {passed_qc}")
+print(f"Results: {results}")
+`,
+    hints: [
+      'Option 1: add "global passed_qc" inside check_gene.',
+      'Option 2 (better): passed_qc = sum(check_gene(v) for v in expression_values)',
+    ],
+    tests: [
+      {
+        description: 'No crash — code runs without UnboundLocalError',
+        testCode: `assert _ns.get('results') is not None, "Code crashed — fix the scope bug"`,
+      },
+      {
+        description: 'passed_qc is 4 (values >= 1.0: 2.1, 4.8, 1.1, 3.2)',
+        testCode: `assert _ns.get('passed_qc') == 4, f"Expected 4, got {_ns.get('passed_qc')}"`,
+      },
+      {
+        description: 'results has 7 booleans',
+        testCode: `r = _ns.get('results'); assert len(r) == 7 and all(isinstance(x, bool) for x in r)`,
+      },
+    ],
+  },
+
+  {
+    id: 29,
+    title: 'Debug: Mutable Default Arg',
+    tier: 'Bug Hunt',
+    tierLevel: 5,
+    xp: 500,
+    icon: '🐛',
+    type: 'bugHunt',
+    concepts: ['mutable default arguments', "Python gotcha", 'None default'],
+    description: `**Python's most infamous gotcha — mutable default arguments**
+
+\`\`\`python
+def add_gene(gene, gene_list=[]):   # default created ONCE at definition!
+    gene_list.append(gene)
+    return gene_list
+
+add_gene("TP53")   # ["TP53"]
+add_gene("MYC")    # ["TP53", "MYC"]  ← persists between calls!
+\`\`\`
+
+Fix: use \`None\` as default and create a new list inside:
+\`\`\`python
+def add_gene(gene, gene_list=None):
+    if gene_list is None:
+        gene_list = []
+    gene_list.append(gene)
+    return gene_list
+\`\`\``,
+    starterCode: `def build_gene_set(gene, existing_genes=[]):   # ← BUG: mutable default
+    existing_genes.append(gene)
+    return existing_genes
+
+# Each call should start fresh
+set_a = build_gene_set("TP53")
+set_b = build_gene_set("BRCA1")   # Should be ["BRCA1"] not ["TP53", "BRCA1"]!
+set_c = build_gene_set("MYC")
+
+print("A:", set_a)  # Should be ["TP53"]
+print("B:", set_b)  # Should be ["BRCA1"]
+print("C:", set_c)  # Should be ["MYC"]
+`,
+    hints: [
+      'Change default from [] to None.',
+      'Add inside function: if existing_genes is None: existing_genes = []',
+    ],
+    tests: [
+      {
+        description: 'Each call returns an independent list',
+        testCode: `f = _ns['build_gene_set']; r1 = f("A_GENE"); r2 = f("B_GENE"); assert r1 != r2, f"Same list returned: {r1}"`,
+      },
+      {
+        description: 'build_gene_set with single gene returns list of one',
+        testCode: `f = _ns['build_gene_set']; r = f("X_TEST"); assert r == ["X_TEST"], f"Got {r}"`,
+      },
+    ],
+  },
+
+  {
+    id: 30,
+    title: 'Debug: None Comparison',
+    tier: 'Bug Hunt',
+    tierLevel: 5,
+    xp: 300,
+    icon: '🐛',
+    type: 'bugHunt',
+    concepts: ['is None', '== None', 'PEP 8', 'logical bugs'],
+    description: `**Bug: \`== None\` vs \`is None\`, and the \`not x == None\` trap**
+
+Always use \`is None\` / \`is not None\`:
+\`\`\`python
+x = None
+x is None       # True  ✓
+x == None       # True but bad practice
+not x == None   # True (parsed as: (not x) == None → False == None → False)
+x is not None   # True ✓ correct way to check "not None"
+\`\`\`
+
+The QC filter below has two None-comparison bugs. Fix them:`,
+    starterCode: `def qc_filter(samples):
+    clean = []
+    for sample in samples:
+        # Bug 1: != None works but use 'is not None'
+        if sample["qc_score"] != None:
+            # Bug 2: 'not sample["batch"] == None' is wrong precedence!
+            # It parses as '(not sample["batch"]) == None' = 'False == None' = False
+            if not sample["batch"] == None:   # ← BUG: use 'is not None'
+                clean.append(sample)
+    return clean
+
+samples = [
+    {"id": "S1", "qc_score": 0.95, "batch": "B1"},
+    {"id": "S2", "qc_score": None, "batch": "B1"},
+    {"id": "S3", "qc_score": 0.87, "batch": None},
+    {"id": "S4", "qc_score": 0.91, "batch": "B2"},
+]
+
+clean_samples = qc_filter(samples)
+print([s["id"] for s in clean_samples])
+`,
+    hints: [
+      'Replace != None with "is not None".',
+      'Replace "not sample[\\"batch\\"] == None" with "sample[\\"batch\\"] is not None".',
+    ],
+    tests: [
+      {
+        description: 'clean_samples = ["S1", "S4"] only',
+        testCode: `ids = [s['id'] for s in _ns.get('clean_samples', [])]; assert ids == ['S1','S4'], f"Got {ids}"`,
+      },
+      {
+        description: 'qc_filter handles all None variants',
+        testCode: `f = _ns['qc_filter']; r = f([{"id":"X","qc_score":None,"batch":"B"},{"id":"Y","qc_score":1.0,"batch":"B"}]); assert len(r)==1 and r[0]["id"]=="Y"`,
+      },
+    ],
+  },
+
 ];

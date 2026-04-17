@@ -955,24 +955,14 @@ a:hover { text-decoration: underline; }
   padding: 10px 20px;
   background: linear-gradient(90deg, #f8514912, #e3b34112);
   border-bottom: 2px solid #f8514966;
-  position: relative;
+  position: fixed;
+  top: 54px;
+  left: 0;
+  right: 0;
   z-index: 200;
-  flex-shrink: 0;
   animation: bannerSlideIn 0.4s ease;
 }
 .sprint-banner.hidden { display: none !important; }
-
-@keyframes bannerSlideIn {
-  from { transform: translateY(-100%); opacity: 0; }
-  to   { transform: translateY(0);     opacity: 1; }
-}
-
-/* Banner must be inserted into the game-body grid column, so we need
-   to wrap banner + game-body. In practice we insert banner before game-body
-   and it sits inside the game-page rows. */
-.game-page {
-  grid-template-rows: 54px auto 1fr;
-}
 
 .sprint-banner-left {
   display: flex;

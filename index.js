@@ -16,7 +16,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/api/players', (req, res) => {
   const { name, avatar } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
-  res.json(db.upsertPlayer(name.trim(), avatar));
+  const player = db.upsertPlayer(name.trim(), avatar);
+  io.emit('leaderboard_update', db.getLeaderboard());
+  res.json(player);
 });
 
 app.get('/api/players/:id', (req, res) => {

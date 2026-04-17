@@ -30,9 +30,9 @@
       <div class="hero-logo">🧬</div>
       <h1 class="hero-title">PyLab</h1>
       <p class="hero-subtitle">
-        A coding game for life scientists. Master Python fundamentals through
-        DNA analysis, protein databases, and genomics challenges.
-        Compete with your colleagues on the live leaderboard.
+        Python for R users — in the lab. Master Python through gene expression,
+        sequence analysis, and bioinformatics challenges framed as R→Python translations.
+        Compete live with your colleagues.
       </p>
 
       <div class="register-card">
@@ -78,19 +78,19 @@
 
   <section class="features">
     <div class="feature-card">
-      <div class="feature-icon">🧪</div>
-      <h3>20 Lab Challenges</h3>
-      <p>From print statements to full genomic pipelines — all framed in life sciences context.</p>
+      <div class="feature-icon">🔄</div>
+      <h3>R → Python Translation</h3>
+      <p>Every challenge shows the R equivalent first. Leverage what you already know — lists, dicts, pandas, regex, stats.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⚡</div>
-      <h3>XP & Progression</h3>
-      <p>Earn XP, level up from Nucleotide to Ecosystem, unlock achievements as you code.</p>
+      <h3>30 Lab Challenges</h3>
+      <p>From 0-indexed genomes to FASTA parsers and DESeq2 pipelines. Bug hunts catch classic R→Python migration mistakes.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🏆</div>
-      <h3>Live Leaderboard</h3>
-      <p>See how you rank against your colleagues in real time. May the best scientist win!</p>
+      <h3>Live Sprint Races</h3>
+      <p>Instructor launches timed challenges to all students simultaneously. 1st place earns +500 XP. May the best scientist win!</p>
     </div>
   </section>
 </div>
@@ -113,14 +113,8 @@
   });
 
   // Check if already logged in
-  const stored = JSON.parse(localStorage.getItem('pylab_player') || 'null');
-  if (stored?.id) {
-    // Offer to continue
-    const nameInput = document.getElementById('player-name');
-    nameInput.value = stored.name || '';
-    const startBtn = document.getElementById('start-btn');
-    startBtn.textContent = '▶ Continue as ' + stored.name;
-  }
+  // sessionStorage is per-tab — each tab gets its own session.
+  // This allows multiple browser tabs to be different students simultaneously.
 
   async function startLab() {
     const nameInput = document.getElementById('player-name');
@@ -146,7 +140,7 @@
       });
       if (!res.ok) throw new Error('Server error');
       const player = await res.json();
-      localStorage.setItem('pylab_player', JSON.stringify({ id: player.id, name: player.name, avatar: player.avatar }));
+      sessionStorage.setItem('pylab_player', JSON.stringify({ id: player.id, name: player.name, avatar: player.avatar }));
       window.location.href = '/game';
     } catch (err) {
       btn.disabled = false;

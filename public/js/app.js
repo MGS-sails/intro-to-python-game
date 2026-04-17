@@ -37,7 +37,7 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 
 // ─── Bootstrap ───────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  const stored = JSON.parse(localStorage.getItem('pylab_player') || 'null');
+  const stored = JSON.parse(sessionStorage.getItem('pylab_player') || 'null');
   if (!stored?.id) { window.location.href = '/'; return; }
 
   try {

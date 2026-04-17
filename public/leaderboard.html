@@ -58,7 +58,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
   const TOTAL_CHALLENGES = 20;
-  const myId = JSON.parse(localStorage.getItem('pylab_player') || 'null')?.id;
+  const myId = JSON.parse(sessionStorage.getItem('pylab_player') || 'null')?.id;
 
   const TIER_COLORS = {
     'Nucleotide': { bg: '#3fb95020', color: '#3fb950', border: '#3fb95040' },

@@ -178,7 +178,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => { initEditor(); });
   function logout() {
-    localStorage.removeItem('pylab_player');
+    sessionStorage.removeItem('pylab_player');
     window.location.href = '/';
   }
 </script>
