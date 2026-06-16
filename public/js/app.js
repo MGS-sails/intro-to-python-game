@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderExamplesList();
   renderProjectList();
   renderChallengeList();
+  initLayoutPrefs();
 
   initWorker();
   initSocket();
@@ -182,6 +183,59 @@ function toggleSection(name) {
   if (!body || !chevron) return;
   const collapsed = body.classList.toggle('collapsed');
   chevron.classList.toggle('open', !collapsed);
+}
+
+// ─── Theme (light / dark) ─────────────────────────────
+function currentTheme() {
+  return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+}
+
+function applyTheme(theme) {
+  const isLight = theme === 'light';
+  document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  try { localStorage.setItem('pylab_theme', isLight ? 'light' : 'dark'); } catch (e) {}
+
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) {
+    btn.textContent = isLight ? '☀️' : '🌙';
+    btn.title = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+  }
+
+  // Re-theme the Monaco editor if it has been created.
+  if (state.editor && window.monaco) {
+    window.monaco.editor.setTheme(isLight ? 'pylab-light' : 'pylab-dark');
+  }
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
+}
+
+// ─── Hideable side panels ─────────────────────────────
+// side === 'left'  → challenge sidebar
+// side === 'right' → leaderboard sidebar
+function togglePanel(side, force) {
+  const body = document.querySelector('.game-body');
+  if (!body) return;
+  const cls = side === 'left' ? 'hide-left' : 'hide-right';
+  const hidden = body.classList.toggle(cls, force);
+
+  const btn = document.getElementById(side === 'left' ? 'toggle-left-btn' : 'toggle-right-btn');
+  if (btn) btn.classList.toggle('active', hidden);
+
+  try { localStorage.setItem('pylab_hide_' + side, hidden ? '1' : '0'); } catch (e) {}
+
+  // Monaco needs to recompute its size after the grid resizes.
+  if (state.editor) setTimeout(() => state.editor.layout(), 240);
+}
+
+// Restore theme + panel state on load.
+function initLayoutPrefs() {
+  applyTheme(currentTheme());
+  try {
+    if (localStorage.getItem('pylab_hide_left')  === '1') togglePanel('left',  true);
+    if (localStorage.getItem('pylab_hide_right') === '1') togglePanel('right', true);
+  } catch (e) {}
 }
 
 // ─── Examples list ────────────────────────────────────
@@ -498,10 +552,31 @@ function initEditor() {
       },
     });
 
+    monaco.editor.defineTheme('pylab-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'comment',    foreground: '6e7781', fontStyle: 'italic' },
+        { token: 'keyword',    foreground: 'cf222e' },
+        { token: 'string',     foreground: '0a3069' },
+        { token: 'number',     foreground: '0550ae' },
+        { token: 'identifier', foreground: '1f2328' },
+      ],
+      colors: {
+        'editor.background':              '#ffffff',
+        'editor.foreground':              '#1f2328',
+        'editor.lineHighlightBackground': '#eaeef280',
+        'editorLineNumber.foreground':    '#8c959f',
+        'editorCursor.foreground':        '#1a7f37',
+        'editor.selectionBackground':     '#1a7f3725',
+        'editorIndentGuide.background':   '#d0d7de',
+      },
+    });
+
     state.editor = monaco.editor.create(document.getElementById('editor-container'), {
       value: '',
       language: 'python',
-      theme: 'pylab-dark',
+      theme: currentTheme() === 'light' ? 'pylab-light' : 'pylab-dark',
       fontSize: 13,
       fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
       fontLigatures: true,
@@ -911,3 +986,5 @@ window.initEditor = initEditor;
 window.toggleSection = toggleSection;
 window.selectExample = selectExample;
 window.selectProjectStep = selectProjectStep;
+window.toggleTheme = toggleTheme;
+window.togglePanel = togglePanel;

@@ -28,6 +28,37 @@
   --lb-w: 280px;
 }
 
+/* ─── Light theme ───────────────────────────────────
+   Overrides the design tokens; everything else inherits. */
+:root[data-theme="light"] {
+  --bg:         #ffffff;
+  --bg2:        #f6f8fa;
+  --bg3:        #eaeef2;
+  --border:     #d0d7de;
+  --text:       #1f2328;
+  --muted:      #656d76;
+  --dim:        #8c959f;
+
+  --green:      #1a7f37;
+  --blue:       #0969da;
+  --purple:     #8250df;
+  --gold:       #9a6700;
+  --red:        #cf222e;
+  --teal:       #1b7c83;
+
+  --t1: #1a7f37;
+  --t2: #0969da;
+  --t3: #8250df;
+  --t4: #9a6700;
+  --t5: #cf222e;
+}
+
+/* Smooth the flip between themes */
+body, .topbar, .challenge-sidebar, .lb-sidebar, .main-panel,
+.sidebar-section-hdr, .btn {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-size: 15px; }
@@ -354,7 +385,42 @@ a:hover { text-decoration: underline; }
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr var(--lb-w);
   overflow: hidden;
+  transition: grid-template-columns 0.22s ease;
 }
+
+/* ─── Hideable side panels ──────────────────────── */
+.game-body.hide-left  { grid-template-columns: 0 1fr var(--lb-w); }
+.game-body.hide-right { grid-template-columns: var(--sidebar-w) 1fr 0; }
+.game-body.hide-left.hide-right { grid-template-columns: 0 1fr 0; }
+
+.game-body.hide-left  .challenge-sidebar,
+.game-body.hide-right .lb-sidebar {
+  width: 0;
+  min-width: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Panel toggle buttons */
+.panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.panel-toggle:hover { color: var(--text); border-color: #58a6ff55; }
+.panel-toggle.active { color: var(--blue); border-color: #58a6ff55; background: #58a6ff15; }
 
 /* ─── Challenge sidebar ─────────────────────────── */
 .challenge-sidebar {

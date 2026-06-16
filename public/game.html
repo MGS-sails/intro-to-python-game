@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PyLab — Game</title>
+  <!-- Apply saved theme before paint to avoid a flash -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pylab_theme');
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -75,6 +84,14 @@
         <span class="live-dot" style="width:6px;height:6px"></span>
         <span id="online-count">0</span> online
       </span>
+      <!-- panel toggles -->
+      <button class="panel-toggle" id="toggle-left-btn" title="Toggle challenge panel"
+        onclick="togglePanel('left')">◧</button>
+      <button class="panel-toggle" id="toggle-right-btn" title="Toggle leaderboard panel"
+        onclick="togglePanel('right')">◨</button>
+      <!-- theme toggle -->
+      <button class="panel-toggle" id="theme-toggle-btn" title="Toggle light / dark mode"
+        onclick="toggleTheme()">🌙</button>
       <a href="/leaderboard" class="btn btn-ghost btn-sm" target="_blank">🏆 Board</a>
       <button class="btn btn-ghost btn-sm" onclick="logout()">Sign out</button>
     </div>
